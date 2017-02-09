@@ -1,0 +1,3 @@
+<aura:component implements="force:appHostable">
+	<h1 class="headline">Headline For Test</h1>
+</aura:component>

@@ -1,0 +1,51 @@
+<apex:page id="ReassignCoaches"
+    controller="ReassignCoachesController"
+    sideBar="false"
+    showHeader="false"
+    docType="html-5.0"
+    title="Reassign Student Coaches">
+    <style>
+        .mainBody {
+            padding: 20px;
+            background: #f8f8f8;
+        }
+    </style>
+
+    <div class="mainBody">
+        <apex:pageMessages id="messages"/>
+
+        <apex:form id="inputForm">
+            <apex:outputPanel id="page1" rendered="{!page == 1}">
+                <apex:outputLabel for="transferSelection" value="Filter by Coaches or Students: "/>
+                <apex:selectList id="transferSelection" value="{!transferSelection}" size="1">
+                    <apex:selectOptions value="{!transferOptions}"/>
+                    <apex:actionSupport event="onchange" action="{!selectPage}" reRender="inputForm"/>
+                </apex:selectList>
+            </apex:outputPanel>
+
+            <br />
+
+            <apex:outputPanel id="page2" rendered="{!page == 2}">
+                <apex:inputText value="{!searchString}" html-placeholder="Enter search terms" style="padding:5px;"/>
+                <apex:commandButton id="coachSearchBtn" action="{!coachSearch}" value="Search" rendered="{!transferSelection == 'Coach'}"/>
+                <apex:commandButton id="contactSearchBtn" action="{!contactSearch}" value="Search" rendered="{!transferSelection == 'Student'}"/>
+
+                <apex:outputPanel id="resultsPanel">
+                    <apex:pageBlock id="resultsBlock" rendered="{!IF(users.size > 0 || contacts.size > 0,true,false)}">
+                        <apex:outputPanel rendered="{!users.size > 0}">
+                            <apex:pageBlockTable value="{!users}" var="u">
+                                <apex:column headerValue="Users"><a href="/{!u.Id}" target="_blank">{!u.Name}</a></apex:column>
+                            </apex:pageBlockTable>
+                        </apex:outputPanel>
+
+                        <apex:outputPanel rendered="{!contacts.size > 0}">
+                            <apex:pageBlockTable value="{!contacts}" var="c">
+                                <apex:column headerValue="Contacts"><a href="/{!c.Id}" target="_blank">{!c.Name}</a></apex:column>
+                            </apex:pageBlockTable>
+                        </apex:outputPanel>
+                    </apex:pageBlock>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:form>
+    </div>
+</apex:page>

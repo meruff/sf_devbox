@@ -1,0 +1,159 @@
+<apex:page id="trailheadLeaderboard"
+           controller="TrailheadLeaderboardController"
+           showHeader="false"
+           sideBar="false"
+           standardStylesheets="false"
+           docType="HTML-5.0">
+    <title>Trailhead Leaderboard</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <apex:stylesheet value="{!URLFOR($Resource.bootstrap_337, 'bootstrap-3.3.7-dist/css/bootstrap.min.css')}"/>
+
+    <style>
+        body {
+            color: #444 !important;
+            background: #F3F3F3 url({!URLFOR($Resource.Trailhead_Leaderboard, 'trailheadLeaderboard/bg.png')}) repeat left top !important;
+        }
+
+        a {
+            color: #394355 !important;
+        }
+
+        td, th {
+            padding: 17px !important;
+            vertical-align: middle !important;
+        }
+
+        th {
+            background-color: #394355 !important;
+            color: #fff !important;
+        }
+
+        .leaderCrown {
+            width: 25px;
+            margin-top: -44px;
+            margin-right: -25px;
+            -ms-transform: rotate(-27deg);
+            -webkit-transform: rotate(-27deg);
+            transform: rotate(-27deg);
+        }
+
+        .panel-default {
+            border-color: #394355 !important;
+        }
+
+        .table>thead>tr>th {
+            border-bottom: 2px solid #394355 !important;
+        }
+
+        .message td {
+            padding: 0px !important;
+            color: #cc0000;
+        }
+
+        .message {
+            margin-bottom: 15px;
+        }
+    </style>
+
+    <div class="container" style="margin-top:20px;margin-bottom:20px;">
+        <div class="page-header">
+            <h2>Trailhead Leaderboard</h2>
+        </div>
+
+        <apex:form id="mainPage">
+            <div class="panel panel-default">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Rank</th>
+                                <th>Points</th>
+                                <th>Badges</th>
+                                <th>Trails</th>
+                                <th>Trailblazer Since</th>
+                                <th>Profile</th>
+                            </tr>
+                        </thead>
+                        <apex:variable value="{!1}" var="rank"/>
+                        <apex:repeat value="{!trailblazers}" var="tb">
+                            <tr>
+                                <td>{!rank}</td>
+                                <td style="white-space:nowrap;">
+                                    <apex:image value="{!URLFOR($Resource.Trailhead_Leaderboard, 'trailheadLeaderboard/crown.png')}"
+                                                styleClass="leaderCrown"
+                                                rendered="{!rank = 1}"/>
+                                    <apex:image value="{!tb.Profile_Photo__c}"
+                                                styleClass="img-circle"
+                                                style="width:45px;margin-top:-4px;margin-right:5px;height:45px;object-fit:cover;"/>
+                                    {!tb.Name}
+                                </td>
+                                <td style="white-space:nowrap;">
+                                    <apex:image value="{!URLFOR($Resource.Trailhead_Leaderboard, 'trailheadLeaderboard/ranks/' + LOWER(tb.Rank__c) + '.png')}"
+                                                style="{!IF(tb.Rank__c = 'Explorer', 'width:43px', 'width:45px')};{!IF(tb.Rank__c = 'Scout', 'width:35px', 'width:45px')};margin-top:-4px;margin-right:5px;"/>
+                                    {!tb.Rank__c}
+                                </td>
+                                <td>{!tb.Points__c}</td>
+                                <td>{!tb.Badges__c}</td>
+                                <td>{!tb.Trails__c}</td>
+                                <td style="white-space:nowrap;">{!tb.Trailblazer_Since__c}</td>
+                                <td>
+                                    <a href="{!tb.Profile_Link__c}" target="_blank">
+                                        Link <span class="glyphicon glyphicon-new-window" aria-hidden="true" style="font-size:12px;"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            <apex:variable value="{!rank + 1}" var="rank"/>
+                        </apex:repeat>
+                    </table>
+                </div>
+            </div>
+
+            <br />
+            <br />
+
+            <h4>Add Your Name to the Leaderboard</h4>
+
+            <apex:pageMessages id="pageMessages"/>
+
+            <div class="form-group">
+                <label for="blazerName">Your Name</label>
+                <apex:inputText styleClass="form-control"
+                                id="blazerName"
+                                html-placeholder="Name"
+                                value="{!newBlazer.Name}"/>
+            </div>
+
+            <div class="form-group">
+                <label for="blazerProfileId">Trailhead Profile Id</label>
+                <apex:inputText styleClass="form-control"
+                                id="blazerProfileId"
+                                html-placeholder="User Id from Trailhead"
+                                value="{!newBlazer.Profile_Id__c}"/>
+                <span id="profileHelp" class="help-block">
+                    Go to your Trailhead profile and get your User Id from the URL. Starts with 005... MAKE SURE YOUR PROFILE IS SET TO PUBLIC :D
+                </span>
+            </div>
+
+            <apex:actionStatus id="saveStatus" >
+                <apex:facet name="stop">
+                    <apex:commandButton value="Submit"
+                                        styleClass="btn btn-success"
+                                        action="{!createNewTrailblazer}"
+                                        status="saveStatus"
+                                        reRender="mainPage,pageMessages"/>
+                </apex:facet>
+                <apex:facet name="start">
+                    <apex:commandButton value="Saving..." disabled="true" status="saveStatus" styleClass="btn btn-default"/>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:form>
+    </div>
+
+    <!-- JS Files -->
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"/>
+    <apex:includeScript value="{!URLFOR($Resource.bootstrap_337, 'bootstrap-3.3.7-dist/js/bootstrap.min.js')}"/>
+</apex:page>

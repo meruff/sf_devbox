@@ -1,0 +1,167 @@
+<apex:page showHeader="false" 
+           standardStylesheets="false" 
+           sidebar="false" 
+           applyHtmlTag="false" 
+           applyBodyTag="false" 
+           docType="html-5.0">    
+
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">    
+
+<head>
+  <title>Salesforce Lightning Design System Trailhead Module</title>
+  
+  <apex:stylesheet value="{!URLFOR($Resource.SLDS092, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+</head> 
+
+<apex:remoteObjects >
+    <apex:remoteObjectModel name="Account" fields="Id, Name, LastModifiedDate"/>
+</apex:remoteObjects>   
+
+<body>
+    <!-- REQUIRED SLDS WRAPPER -->
+    <div class="slds">
+        <!-- MASTHEAD -->
+        <p class="slds-text-heading--label slds-m-bottom--small">
+            Salesforce Lightning Design System Trailhead Module
+        </p>
+        
+        <!-- PAGE HEADER -->
+        <div class="slds-page-header" role="banner">
+            
+            <!-- LAYOUT GRID -->
+            <div class="slds-grid">
+                
+                <!-- GRID COL -->
+                <div class="slds-col">
+                    
+                    <!-- HEADING AREA -->
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <span class="slds-avatar slds-avatar--large">
+                                <img src="{!URLFOR($Resource.SLDS092, 'assets/images/avatar1.jpg')}" alt="portrait"/>
+                            </span>
+                        </div>
+                    
+                        <div class="slds-media__body">
+                            <p class="slds-text-heading--label">Accounts</p>
+                            <h1 class="slds-text-heading--medium">My Accounts</h1>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- GRID COL -->
+                <div class="slds-col slds-no-flex slds-align-middle">
+                    <div class="slds-button-group" role="group">
+                        <button class="slds-button slds-button--neutral">
+                            New Account
+                        </button>
+                        
+                        <button class="slds-button slds-button--neutral">
+                            More
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="slds-text-body--small slds-m-top--x-small">COUNT items</p>
+        </div>
+        
+        <!-- PRIMARY CONTENT WRAPPER -->
+        <div class="myapp">
+            <!-- CREATE NEW ACCOUNT -->
+            <div aria-labelledby="newaccountform">
+
+                <!-- BOXED AREA -->
+                <fieldset class="slds-box slds-theme--default slds-container--small">
+                    <legend id="newaccountform" class="slds-text-heading--medium slds-p-vertical--medium">
+                        Add a new account
+                    </legend>
+                    
+                    <!-- CREATE NEW ACCOUNT FORM -->
+                    <form class="slds-form-element">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="accountName">
+                                Name
+                            </label>
+                            
+                            <div class="slds-form-element__control">
+                                <input id="accountName" class="slds-input" type="text" placeholder="New Account"/>
+                            </div>
+                            
+                            <button class="slds-button slds-button--brand slds-m-top--medium" type="button" onClick="createAccount()">
+                                Create
+                            </button>
+                        </div>
+                    </form>
+                </fieldset>
+            </div>
+        
+            <!-- ACCOUNT LIST TABLE -->
+            <div id="accountList" class="slds-p-vertical--medium"></div>
+        </div>
+        
+        <!-- FOOTER -->
+        <footer role="contentinfo" class="slds-p-around--large">
+            <!-- LAYOUT GRID -->
+            <div class="slds-grid slds-grid--align-spread">
+                <p class="slds-col">Salesforce Lightning Design System Example</p>
+                <p class="slds-col">&copy; Mathew Ruff</p>
+            </div>
+        </footer>
+    </div>
+</body>
+
+<!-- JAVASCRIPT -->
+<script>
+  var account = new SObjectModel.Account();
+  var outputDiv = document.getElementById("accountList");    
+
+  function updateOutputDiv() {
+  account.retrieve(
+    {orderby: [{LastModifiedDate: 'DESC'}], limit: 10},
+    function(error, records) {
+      if (error) {
+        alert(error.message);
+      } else {
+        var accountIcon = '<span class="slds-icon__container slds-icon-standard-account">';
+        accountIcon += '<svg aria-hidden="true" class="slds-icon">';
+        accountIcon += '<use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/standard-sprite/svg/symbols.svg#account')}"></use>';
+        accountIcon += '</svg><span class="slds-assistive-text">Account</span></span>';  
+
+        var html = '<div class="slds-scrollable--x"><table class="slds-table slds-table--bordered">';  
+
+        html += '<thead><tr><th scope="col">Type</th>';
+        html += '<th scope="col">Account name</th>';
+        html += '<th scope="col">Account ID</th></tr></thead><tbody>';  
+
+        records.forEach(function(record) {
+            html += '<tr><td>' + accountIcon + '</td>';
+            html += '<td>' + record.get("Name") + '</td>';
+            html += '<td>' + record.get("Id") + '</td></tr>';
+        });
+        html = html + '</tbody></table></div>';
+        outputDiv.innerHTML = html;
+      }
+    }
+  );
+}
+  
+  updateOutputDiv();
+  
+  function createAccount() {
+  var accountName = document.getElementById("accountName").value;
+  var account = new SObjectModel.Account();
+  account.create({Name: accountName}, function(error, records) {
+    if (error) {
+      alert(error.message);
+    } else {
+      updateOutputDiv();
+    }
+  });
+  return false;
+}
+</script>
+<!-- / JAVASCRIPT -->
+
+</html>
+</apex:page>

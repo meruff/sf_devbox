@@ -1,0 +1,5 @@
+<aura:component description="campingHeader">
+    <div class="slds-page-header" role="banner">
+        <h1>Camping List</h1>
+    </div>
+</aura:component>

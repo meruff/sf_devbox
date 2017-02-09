@@ -1,0 +1,132 @@
+<apex:page id="certifications"
+           controller="CertificationsController"
+           showHeader="false"
+           sideBar="false"
+           standardStylesheets="false"
+           docType="HTML-5.0">
+    <title>Sierra-Cedar Certifications</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <apex:stylesheet value="{!URLFOR($Resource.bootstrap_337, 'bootstrap-3.3.7-dist/css/bootstrap.min.css')}"/>
+
+    <style>
+        body {
+            color: #444 !important;
+            background: #1f506e url(https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/line-of-business/blue-trailhead-mountains.jpg) no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        .message {
+            margin-bottom: 15px;
+        }
+    </style>
+
+    <div class="container" style="margin-top:20px;margin-bottom:20px;">
+        <apex:form id="mainPage">
+            <div class="page-header">
+                <h2>Sierra-Cedar Certifications</h2>
+            </div>
+
+            <apex:variable value="{!FLOOR((sciCertCount/25)*100)}" var="sciPercent"/>
+            <h5>{!sciPercent}% to Silver Partner Status</h5>
+            <div class="progress">
+                <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="{!sciPercent}" aria-valuemin="0" aria-valuemax="100" style="width:{!sciPercent}%">
+                    <span class="sr-only">{!sciPercent}% Complete</span>
+                </div>
+            </div>
+
+            <apex:variable value="{!1}" var="num"/>
+            <apex:repeat value="{!ccws}" var="ccw">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" href="#collapse{!num}" aria-expanded="true" aria-controls="collapse{!num}">
+                                {!ccw.c.Name}
+                            </a>
+                            <span class="pull-right">
+                                Partner Certs: {!ccw.validCertCount}
+                            </span>
+                        </h4>
+                    </div>
+                    <div id="collapse{!num}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Certification Name</th>
+                                            <th>Certification Date</th>
+                                        </tr>
+                                    </thead>
+
+                                    <apex:repeat value="{!ccw.certs}" var="sc">
+                                        <tr>
+                                            <td>{!sc.Certification_Name__c}</td>
+                                            <td>{!sc.Certification_Date__c}</td>
+                                        </tr>
+                                    </apex:repeat>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <apex:variable value="{!num + 1}" var="num"/>
+            </apex:repeat>
+
+            <br />
+            <br />
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        Add to the Certifications List
+                    </h4>
+                </div>
+                <div class="panel-body">
+                    <apex:pageMessages id="pageMessages"/>
+
+                    <div class="form-group">
+                        <label for="contactEmail">Email</label>
+                        <apex:inputText styleClass="form-control"
+                                        id="contactEmail"
+                                        html-placeholder="Email address"
+                                        value="{!newContact.Email}"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="certContactId">Certification Contact Id</label>
+                        <apex:inputText styleClass="form-control"
+                                        id="certContactId"
+                                        html-placeholder="Contact Id from the verification site"
+                                        value="{!newContact.Certification_Contact_Id__c}"/>
+                        <span id="profileHelp" class="help-block">
+                            Go to the Certification Verification site and find the person you want to add. Click "View Ceritifications" and then "Print View".
+                            Copy the Salesforce Id from the URL and paste here.
+                        </span>
+                    </div>
+
+                    <apex:actionStatus id="saveStatus" >
+                        <apex:facet name="stop">
+                            <apex:commandButton value="Submit"
+                                                styleClass="btn btn-success"
+                                                action="{!createNewContact}"
+                                                status="saveStatus"
+                                                reRender="mainPage,pageMessages"/>
+                        </apex:facet>
+                        <apex:facet name="start">
+                            <apex:commandButton value="Saving..." disabled="true" status="saveStatus" styleClass="btn btn-default"/>
+                        </apex:facet>
+                    </apex:actionStatus>
+                </div>
+            </div>
+        </apex:form>
+    </div>
+
+    <!-- JS Files -->
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"/>
+    <apex:includeScript value="{!URLFOR($Resource.bootstrap_337, 'bootstrap-3.3.7-dist/js/bootstrap.min.js')}"/>
+</apex:page>

@@ -1,0 +1,85 @@
+<apex:page showHeader="false" 
+           standardStylesheets="false" 
+           sidebar="false" 
+           applyHtmlTag="false" 
+           applyBodyTag="false" 
+           docType="html-5.0">    
+
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">    
+
+<head>
+  <title>Salesforce Lightning Design System Trailhead Module</title>
+  
+  <apex:stylesheet value="{!URLFOR($Resource.SLDS092, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+</head>    
+
+<body>
+    <!-- REQUIRED SLDS WRAPPER -->
+    <div class="slds">
+        <!-- MASTHEAD -->
+        <p class="slds-text-heading--label slds-m-bottom--small">
+            Salesforce Lightning Design System Trailhead Module
+        </p>
+        
+        <!-- PAGE HEADER -->
+        <div class="slds-page-header" role="banner">
+            
+            <!-- LAYOUT GRID -->
+            <div class="slds-grid">
+                
+                <!-- GRID COL -->
+                <div class="slds-col">
+                    
+                    <!-- HEADING AREA -->
+                    <p class="slds-text-heading--label">Accounts</p>
+                    <h1 class="slds-text-heading--medium">My Accounts</h1>
+                </div>
+                
+                <!-- GRID COL -->
+                <div class="slds-col slds-no-flex slds-align-middle">
+                    <div class="slds-button-group" role="group">
+                        <button class="slds-button slds-button--neutral">
+                            New Account
+                        </button>
+                        
+                        <button class="slds-button slds-button--neutral">
+                            More
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="slds-text-body--small slds-m-top--x-small">COUNT items</p>
+        </div>
+        
+        <!-- PRIMARY CONTENT WRAPPER -->
+        <div class="myapp">
+            <ul class="slds-list--dotted slds-m-top--large">
+                <li>Account 1</li>
+                <li>Account 2</li>
+                <li>Account 3</li>
+                <li>Account 4</li>
+                <li>Account 5</li>
+                <li>Account 6</li>
+                <li>Account 7</li>
+                <li>Account 8</li>
+                <li>Account 9</li>
+                <li>Account 10</li>
+            </ul>
+        </div>
+        
+        <!-- FOOTER -->
+        <footer role="contentinfo" class="slds-p-around--large">
+            <!-- LAYOUT GRID -->
+            <div class="slds-grid slds-grid--align-spread">
+                <p class="slds-col">Salesforce Lightning Design System Example</p>
+                <p class="slds-col">&copy; Mathew Ruff</p>
+            </div>
+        </footer>
+    </div>
+</body>
+
+<!-- JAVASCRIPT -->
+
+</html>
+</apex:page>
