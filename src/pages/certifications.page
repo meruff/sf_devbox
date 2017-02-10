@@ -4,7 +4,7 @@
            sideBar="false"
            standardStylesheets="false"
            docType="HTML-5.0">
-    <title>Sierra-Cedar Certifications</title>
+    <title>Sierra-Cedar Salesforce Certifications</title>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -13,11 +13,22 @@
     <style>
         body {
             color: #444 !important;
-            background: #1f506e url(https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/line-of-business/blue-trailhead-mountains.jpg) no-repeat center center fixed;
-            -webkit-background-size: cover;
-            -moz-background-size: cover;
-            -o-background-size: cover;
-            background-size: cover;
+            background: #f3f3f3 url({!URLFOR($Resource.Trailhead_Leaderboard, 'trailheadLeaderboard/bg.png')}) repeat left top !important;
+        }
+
+        .panel-default>.panel-heading {
+            color: #fff !important;
+            background-color: #06354d !important;
+        }
+
+        .panel-heading {
+            padding: 10px 10px !important;
+        }
+
+        .panel-title {
+            font-weight: 400 !important;
+            text-transform: uppercase;
+            font-size: 14px !important;
         }
 
         .message {
@@ -28,16 +39,19 @@
     <div class="container" style="margin-top:20px;margin-bottom:20px;">
         <apex:form id="mainPage">
             <div class="page-header">
-                <h2>Sierra-Cedar Certifications</h2>
+                <h2>Sierra-Cedar Salesforce Certifications</h2>
             </div>
 
             <apex:variable value="{!FLOOR((sciCertCount/25)*100)}" var="sciPercent"/>
-            <h5>{!sciPercent}% to Silver Partner Status</h5>
+            <h5>{!sciPercent}% to Partner Status</h5>
             <div class="progress">
-                <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="{!sciPercent}" aria-valuemin="0" aria-valuemax="100" style="width:{!sciPercent}%">
+                <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{!sciPercent}" aria-valuemin="0" aria-valuemax="100" style="width:{!sciPercent}%">
                     <span class="sr-only">{!sciPercent}% Complete</span>
                 </div>
             </div>
+
+            <button id="expandAll" class="btn btn-primary" onclick="return false;" style="margin-bottom:15px;">Toggle Collapse All</button>
+            <a class="btn btn-primary" href="#addNew" style="margin-bottom:15px;">Add New</a>
 
             <apex:variable value="{!1}" var="num"/>
             <apex:repeat value="{!ccws}" var="ccw">
@@ -47,45 +61,39 @@
                             <a role="button" data-toggle="collapse" href="#collapse{!num}" aria-expanded="true" aria-controls="collapse{!num}">
                                 {!ccw.c.Name}
                             </a>
-                            <span class="pull-right">
+                            <span class="pull-right" style="text-transform:capitalize;">
                                 Partner Certs: {!ccw.validCertCount}
                             </span>
                         </h4>
                     </div>
-                    <div id="collapse{!num}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Certification Name</th>
-                                            <th>Certification Date</th>
-                                        </tr>
-                                    </thead>
+                    <div id="collapse{!num}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="table-responsive" style="margin-bottom:0px;">
+                            <table class="table table-striped" style="margin-bottom:0px;">
+                                <thead>
+                                    <tr>
+                                        <th>Certification Name</th>
+                                        <th>Certification Date</th>
+                                    </tr>
+                                </thead>
 
-                                    <apex:repeat value="{!ccw.certs}" var="sc">
-                                        <tr>
-                                            <td>{!sc.Certification_Name__c}</td>
-                                            <td>{!sc.Certification_Date__c}</td>
-                                        </tr>
-                                    </apex:repeat>
-                                </table>
-                            </div>
+                                <apex:repeat value="{!ccw.certs}" var="sc">
+                                    <tr>
+                                        <td>{!sc.Certification_Name__c}</td>
+                                        <td>{!sc.Certification_Date__c}</td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
                         </div>
                     </div>
                 </div>
                 <apex:variable value="{!num + 1}" var="num"/>
             </apex:repeat>
 
-            <br />
-            <br />
+            <div class="page-header" id="addNew">
+                <h3>Add to the Certifications List</h3>
+            </div>
 
             <div class="panel panel-default">
-                <div class="panel-heading" role="tab" id="headingOne">
-                    <h4 class="panel-title">
-                        Add to the Certifications List
-                    </h4>
-                </div>
                 <div class="panel-body">
                     <apex:pageMessages id="pageMessages"/>
 
@@ -104,7 +112,7 @@
                                         html-placeholder="Contact Id from the verification site"
                                         value="{!newContact.Certification_Contact_Id__c}"/>
                         <span id="profileHelp" class="help-block">
-                            Go to the Certification Verification site and find the person you want to add. Click "View Ceritifications" and then "Print View".
+                            Go to the Certification Verification site and find the person you want to add. Click "View Certifications" and then "Print View".
                             Copy the Salesforce Id from the URL and paste here.
                         </span>
                     </div>
@@ -129,4 +137,9 @@
     <!-- JS Files -->
     <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"/>
     <apex:includeScript value="{!URLFOR($Resource.bootstrap_337, 'bootstrap-3.3.7-dist/js/bootstrap.min.js')}"/>
+    <script>
+        $('#expandAll').on('click', function () {
+            $('.panel-collapse').collapse('toggle');
+        });
+    </script>
 </apex:page>

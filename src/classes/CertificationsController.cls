@@ -5,7 +5,7 @@
 ******************************************/
 public class CertificationsController {
     private static final String CALLOUT_URL = 'http://certification.salesforce.com/certification-detail-print?conId=';
-    private Set<Id> cerIds;
+    private Map<String, Contact> contactMap;
     public Integer sciCertCount { get; set; }
     public Contact newContact { get; set; }
     public List<PopulateCertifications.ContactCertWrapper> ccws { get; set; }
@@ -43,8 +43,8 @@ public class CertificationsController {
 
     public void populateContacts() {
         sciCertCount = 0;
-        cerIds = new Set<Id>();
         newContact = new Contact();
+        contactMap = new Map<String, Contact>();
         ccws = new List<PopulateCertifications.ContactCertWrapper>();
 
         List<Contact> contacts = new List<Contact>([
@@ -59,6 +59,12 @@ public class CertificationsController {
             ORDER BY Name ASC
         ]);
 
+        if (contacts.size() > 0) {
+            for (Contact con : contacts) {
+                contactMap.put(con.Certification_Contact_Id__c, con);
+            }
+        }
+
         for (Contact c : contacts) {
             Integer validCerts = 0;
             Integer invalidCerts = 0;
@@ -72,7 +78,6 @@ public class CertificationsController {
                 }
             }
 
-            cerIds.add(c.Certification_Contact_Id__c);
             PopulateCertifications.ContactCertWrapper ccw = new PopulateCertifications.ContactCertWrapper();
             ccw.c = c;
             ccw.certs.addAll(c.Salesforce_Certifications__r);
@@ -97,39 +102,61 @@ public class CertificationsController {
             return;
         }
 
-        if (cerIds.contains(newContact.Certification_Contact_Id__c)) {
-            ApexPages.addMessage(new ApexPages.Message(
-                ApexPages.Severity.Error,
-                'This Contact already exists.'));
-            return;
-        }
-
-
         Http h = new Http();
         HttpRequest req = new HttpRequest();
         req.setEndpoint(CALLOUT_URL + newContact.Certification_Contact_Id__c);
         req.setMethod('GET');
         HttpResponse res = h.send(req);
 
-        PopulateCertifications.ContactCertWrapper ccw = new PopulateCertifications.ContactCertWrapper();
-        ccw.c = newContact;
-
-        ccw = PopulateCertifications.populateCCW(res.getBody(), ccw);
-
-        try {
-            upsert ccw.c;
+        if (!res.getBody().contains('No Active Certification Credentials Found')) {
+            List<Salesforce_Certification__c> certifications = new List<Salesforce_Certification__c>();
+            PopulateCertifications.ContactCertWrapper ccw = new PopulateCertifications.ContactCertWrapper();
+            ccw.c = newContact;
+            ccw = PopulateCertifications.populateCCW(res.getBody(), ccw);
 
             for (Salesforce_Certification__c sc : ccw.certs) {
+                Boolean isDupe = false;
                 sc.Contact__c = ccw.c.Id;
+
+                if (contactMap.containsKey(ccw.c.Certification_Contact_Id__c)) {
+                    for (Salesforce_Certification__c check : contactMap.get(ccw.c.Certification_Contact_Id__c).Salesforce_Certifications__r) {
+                        if (check.Certification_Name__c == sc.Certification_Name__c) {
+                            isDupe = true;
+                            check.Certification_Name__c = sc.Certification_Name__c;
+                            check.Certification_Date__c = sc.Certification_Date__c;
+                            certifications.add(check);
+                        }
+                    }
+                }
+
+                if (!isDupe) certifications.add(sc);
             }
 
-            upsert ccw.certs;
+            try {
+                upsert ccw.c Certification_Contact_Id__c;
 
-            populateContacts();
-        } catch (DmlException e) {
+                if (certifications.size() > 0) {
+                    for (Salesforce_Certification__c sc : certifications) {
+                        sc.Contact__c = ccw.c.Id;
+                    }
+
+                    upsert certifications;
+                }
+
+                populateContacts();
+            }
+            catch (DmlException e) {
+                ApexPages.addMessage(new ApexPages.Message(
+                    ApexPages.Severity.Error,
+                    'ERROR during creation. Please try again later ' + e.getMessage()));
+                return;
+            }
+        } else {
             ApexPages.addMessage(new ApexPages.Message(
                 ApexPages.Severity.Error,
-                'ERROR during creation. Please try again later ' + e.getMessage()));
+                'Either you have no active credentials, or could not find a User for this Id: ' +
+                newContact.Certification_Contact_Id__c + '. ' +
+                'Please ensure you have copied the correct Id from the Verification Site.'));
             return;
         }
     }

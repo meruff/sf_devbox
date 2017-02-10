@@ -77,6 +77,9 @@ global class PopulateCertifications implements Schedulable {
                         for (Salesforce_Certification__c check : contactMap.get(ccw.c.Certification_Contact_Id__c).Salesforce_Certifications__r) {
                             if (check.Certification_Name__c == sc.Certification_Name__c) {
                                 isDupe = true;
+                                check.Certification_Name__c = sc.Certification_Name__c;
+                                check.Certification_Date__c = sc.Certification_Date__c;
+                                certifications.add(check);
                             }
                         }
                     }
@@ -104,7 +107,6 @@ global class PopulateCertifications implements Schedulable {
         ccw.c.LastName = lastName;
 
         Integer lastIndexOfCert = 0;
-        Integer lastIndexOfDate = 175;
 
         for (Integer i = 0; i < resBody.countMatches('ver-search-results-line'); i++) {
             Salesforce_Certification__c sc = new Salesforce_Certification__c();
@@ -116,16 +118,16 @@ global class PopulateCertifications implements Schedulable {
             ).trim();
             sc.Certification_Name__c = certName;
 
-            Integer indexOfDate = resBody.indexOf('class=\"date-certified"') + lastIndexOfDate;
-            String dateCertified = resBody.substring(indexOfDate + lastIndexOfDate).substringBetween(
-                '>',
+            String subbed = resBody.substring(indexOfCert + lastIndexOfCert);
+            Integer indexOfDate = subbed.indexOf('class=\"date-certified"');
+            String dateCertified = subbed.substring(indexOfDate).substringBetween(
+                'class="date-certified">',
                 '<'
             ).trim();
             sc.Certification_Date__c = dateCertified;
 
             ccw.certs.add(sc);
             lastIndexOfCert += 184;
-            lastIndexOfDate += 178;
         }
 
         return ccw;

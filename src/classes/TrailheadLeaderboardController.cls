@@ -66,9 +66,6 @@ public class TrailheadLeaderboardController {
         req.setMethod('GET');
         HttpResponse res = h.send(req);
 
-        System.debug('merf: ' + res.getStatus());
-        System.debug('merf: ' + res.getBody());
-
         if (res.getStatus() != 'Not Found' && (!res.getBody().contains('Someone\'s hiding!') && !res.getBody().contains('This user has chosen to keep their profile private.'))) {
             Trailblazer__c tbToInsert = PopulateTrailblazers.populateTrailblazer(res.getBody());
             tbToInsert.Profile_Id__c = tb.Profile_Id__c;
