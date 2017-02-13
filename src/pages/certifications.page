@@ -43,7 +43,10 @@
             </div>
 
             <apex:variable value="{!FLOOR((sciCertCount/25)*100)}" var="sciPercent"/>
-            <h5>{!sciPercent}% to Partner Status</h5>
+            <apex:variable value="{!FLOOR(25 - sciCertCount)}" var="certsToGo"/>
+            <apex:variable value="{!IF(sciPercent > 100, 100, sciPercent)}" var="sciPercentFixed"/>
+            <apex:variable value="{!IF(certsToGo < 0, 0, certsToGo)}" var="certsToGoFixed"/>
+            <h5>{!sciPercentFixed}% to Partner Status. {!certsToGoFixed} more to go.</h5>
             <div class="progress">
                 <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{!sciPercent}" aria-valuemin="0" aria-valuemax="100" style="width:{!sciPercent}%">
                     <span class="sr-only">{!sciPercent}% Complete</span>
