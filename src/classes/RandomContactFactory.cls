@@ -1,20 +1,20 @@
 /*****************************************
 * File: RandomContactFactory
 * Author: Mathew Ruff, Sierra-Cedar
-* Description: Unit Tests for 
+* Description: Random Contact Generator for Unit Tests
 ******************************************/
-@IsTest
-private class RandomContactFactory {
-    static testMethod void testBehavior() {
-        // Arrange
+public class RandomContactFactory {
+    public static List<Contact> generateRandomContacts(Integer numOfContacts, String contLastName) {
+        List<Contact> contacts = new List<Contact>();
 
+        for (Integer i = 0; i < numOfContacts; i++) {
+            Contact c = new Contact(
+                FirstName = 'Test ' + i,
+                LastName = contLastName
+            );
+            contacts.add(c);
+        }
 
-        // Act 
-        Test.startTest();
-
-        Test.stopTest();
-
-        // Assert
-        System.assert();
+        return contacts;
     }
 }
