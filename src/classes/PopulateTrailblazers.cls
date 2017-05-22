@@ -121,12 +121,13 @@ global class PopulateTrailblazers implements Schedulable {
         ).trim();
         tb.Profile_Link__c = profileLink;
 
-        Integer indexOfRank = resBody.indexOf('<h3 class=\'panel-heading__title th-profile-ranger-popover-title pull-left\'>');
+        Integer indexOfRank = resBody.indexOf('<img class=\'th-profile-rank-image\' src=\'/assets/ranks/');
+        System.debug('merf: ' + resBody.substring(indexOfRank));
         String rank = resBody.substring(indexOfRank).substringBetween(
-            '<h3 class=\'panel-heading__title th-profile-ranger-popover-title pull-left\'>',
-            '</h3>'
+            '<img class=\'th-profile-rank-image\' src=\'/assets/ranks/',
+            '-'
         ).trim();
-        tb.Rank__c = rank;
+        tb.Rank__c = rank.capitalize();
 
         Integer indexOfPhoto = resBody.indexOf('th-profile-photo-container img-circle');
         String photoURL = resBody.substring(indexOfPhoto).substringBetween(
