@@ -11,7 +11,7 @@ public class AccountProcessor {
             SELECT Number_Of_Contacts__c
             FROM Account
             WHERE Id IN :accIds
-        ]);
+        ]); 
 
         List<Contact> contacts = new List<Contact>([
             SELECT Id, AccountId

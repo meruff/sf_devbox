@@ -12,7 +12,7 @@
     <p>Date:
         <ui:outputDate value="{!v.expense.Date__c}"/>
     </p>
-
+    
     <p>Reimbursed?:
         <ui:outputCheckbox value="{!v.expense.Reimbursed__c}"/>
     </p>

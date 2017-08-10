@@ -1,0 +1,10 @@
+<!--
+ - Created by meruff on 6/29/17.
+ -->
+
+<aura:documentation>
+	<aura:description>Documentation for myEverythingComponent</aura:description>
+	<aura:example name="myEverythingComponent" ref="myEverythingComponent" label="myEverythingComponent">
+		Example for myEverythingComponent
+	</aura:example>
+</aura:documentation>
