@@ -1,0 +1,10 @@
+<!--
+* File: AccountList.cmp
+* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Description: 
+-->
+<apex:page id="AccountList" standardController="Account" recordSetVar="accounts">
+    <apex:repeat value="{!accounts}" var="a">
+        <li><apex:outputLink value="/{!a.Id}">{!a.Name}</apex:outputLink></li>
+    </apex:repeat>
+</apex:page>

@@ -8,6 +8,8 @@
                     'Reimbursed__c': false }"/>
     <aura:attribute name="expenses" type="Expense__c[]"/>
 
+    <aura:handler name="updateExpense" event="c:expensesItemUpdate" action="{!c.handleUpdateExpense}"/>
+
     <!-- PAGE HEADER -->
     <div class="slds-page-header" role="banner">
         <div class="slds-grid">

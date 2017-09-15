@@ -1,0 +1,11 @@
+<!--
+* File: OppView.cmp
+* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Description: 
+-->
+<apex:page id="OppView" standardController="Opportunity">
+    <apex:outputField value="{!Opportunity.Name}"/>
+    <apex:outputField value="{!Opportunity.Amount}"/>
+    <apex:outputField value="{!Opportunity.CloseDate}"/>
+    <apex:outputField value="{!Opportunity.Account.Name}"/>
+</apex:page>

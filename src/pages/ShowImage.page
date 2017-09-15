@@ -1,0 +1,8 @@
+<!--
+* File: ShowImage.cmp
+* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Description: 
+-->
+<apex:page id="ShowImage">
+    <apex:image value="{!URLFOR($Resource.vfimagetest, 'cats/kitten1.jpg')}"/>
+</apex:page>

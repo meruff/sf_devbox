@@ -1,44 +1,37 @@
 ({
-    createCampingItem: function(component, event, helper) {
-        event.preventDefault();
-        var validate = true;
-        var nameField = component.find("itemName");
-        var itemName = nameField.get("v.value");
-        var quantityField = component.find("quantity");
-        var quantity = quantityField.get("v.value");
-        var priceField = component.find("price");
-        var price = priceField.get("v.value");
+    doInit : function (component, event, helper) {
+        var action = component.get("c.getItems");
 
-        if ($A.util.isEmpty(itemName)){
-            validate = false;
-            nameField.set("v.errors", [{message:"Camping Item name can't be blank."}]);
-        } else {
-            nameField.set("v.errors", null);
-        }
+        action.setCallback(this, function(response) {
 
-        if (quantity == 0) {
-            validate = false;
-            quantityField.set("v.errors", [{message:"Quantity can't be blank."}]);
-        } else {
-            quantityField.set("v.errors", null);
-        }
+            var state = response.getState();
 
-        if (price == 0) {
-            validate = false;
-            priceField.set("v.errors", [{message:"Price can't be blank."}]);
-        } else {
-            priceField.set("v.errors", null);
-        }
+            if (component.isValid() && state == 'SUCCESS') {
+                component.set("v.items", response.getReturnValue());
+            } else {
+                console.log('Failed with state: ' + state);
+            }
+        });
 
-        if (validate) {
-            var items = component.get("v.items");
-            var item = component.get("v.newItem");
-            console.log("Create expense: " + JSON.stringify(item));
-            var newItem = JSON.parse(JSON.stringify(item));
-            items.push(newItem);
-            component.set("v.items", items);
-            component.set("v.newItem", "{ sObjectType': 'Camping_Item__c', 'Name': '', 'Quantity__c': 0, 'Price__c': 0, 'Packed__c': false }");
-            return false;
-        }
+        $A.enqueueAction(action);
+    },
+    handleAddItem: function(component, event, helper) {
+        var item = event.getParam("item");
+
+        var action = component.get("c.saveItem");
+        //json stringify is not needed I think.
+        action.setParams({
+            "item": item
+        });
+
+        action.setCallback(this, function(response){
+            var state = response.getState();
+            if (component.isValid() && state === "SUCCESS") {
+                var items = component.get("v.items");
+                items.push(item);
+                component.set("v.items",items);
+            }
+        });
+        $A.enqueueAction(action);
     }
 })

@@ -1,0 +1,13 @@
+<!--
+* File: CreateContact.cmp
+* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Description: 
+-->
+<apex:page id="CreateContact" standardController="Contact">
+    <apex:form>
+        <apex:inputField value="{!Contact.FirstName}"/>
+        <apex:inputField value="{!Contact.LastName}"/>
+        <apex:inputField value="{!Contact.Email}"/>
+        <apex:commandButton value="Save" action="{!save}"/>
+    </apex:form>
+</apex:page>

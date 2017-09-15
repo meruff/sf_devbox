@@ -1,0 +1,8 @@
+<!--
+* File: DisplayImage.cmp
+* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Description: 
+-->
+<apex:page id="DisplayImage" showHeader="false">
+    <apex:image value="https://developer.salesforce.com/files/salesforce-developer-network-logo.png"/>
+</apex:page>
