@@ -1,0 +1,113 @@
+<!--
+* File: TrailblazerList.cmp
+* Author: detonation0
+* Description: Lists out the Trailblazers
+-->
+<aura:component description="TrailblazerList" controller="TrailblazerListController">
+    <!-- Custom Attributes -->
+    <aura:attribute name="trailblazers" type="Trailblazer__c[]"/>
+
+    <!-- Custom Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.loadTrailblazers}"/>
+
+    <div id="leaderBoard" class="slds-card">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                <div class="slds-media__body">
+                    <h2>
+                        <span class="slds-text-heading--small">Trailblazers</span>
+                    </h2>
+                </div>
+            </header>
+            <a href="#newBlazerForm" onclick="" class="cust-link">
+                <lightning:icon iconName="utility:new" size="x-small"/>
+                Add a new Trailblazer
+            </a>
+        </div>
+        <div class="slds-card__body">
+            <div class="slds-scrollable--x">
+                <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title--caps">
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Number">#</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Name">Name</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Rank">Rank</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Points">Points</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Badges">Badges</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Trails">Trails</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Trailblazer Since">Trailblazer Since</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Profile">Profile</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <aura:iteration items="{!v.trailblazers}" var="tb" indexVar="index">
+                        <tr class="slds-hint-parent">
+                            <td class="slds-cell-wrap">
+                                <div class="slds-truncate">{!(index + 1)}</div>
+                            </td>
+                            <td class="slds-cell-wrap" style="white-space:nowrap;">
+                                <div class="slds-truncate">
+                                    <aura:if isTrue="{!(index + 1) == 1}">
+                                        <img src="{!$Resource.Trailhead_Leaderboard + '/trailheadLeaderboard/crown.png'}" class="leaderCrown"/>
+                                    </aura:if>
+                                    <span class="slds-avatar slds-avatar_large slds-avatar_circle" style="margin-right:15px;">
+                                        <img src="{!tb.Profile_Photo__c}"/>
+                                    </span>
+                                    {!tb.Name}
+                                </div>
+                            </td>
+                            <td class="slds-cell-wrap" style="white-space:nowrap;">
+                                <div class="slds-truncate">
+                                    <span class="slds-avatar slds-avatar_large" style="margin-right:15px;">
+                                        <!--<aura:attribute name="rankLink" type="String" default="trailheadLeaderboard/ranks/{!tb.Rank__c}.png"/>-->
+                                        <!--<img src="{!$Resource.Trailhead_Leaderboard + v.rankLink}"-->
+                                                    <!--style="{!IF(tb.Rank__c = 'Adventurer' || tb.Rank__c = 'Expeditioner','margin-top:7px;',-->
+                                                                <!--IF(tb.Rank__c = 'Hiker', 'margin-top:4px;',-->
+                                                                    <!--IF(tb.Rank__c = 'Ranger', 'margin-top:4px;','')-->
+                                                                <!--)-->
+                                                            <!--)};max-height:100%"/>-->
+                                    </span>
+                                    {!tb.Rank__c}
+                                </div>
+                            </td>
+                            <td class="slds-cell-wrap">
+                                <div class="slds-truncate">{!tb.Points__c}</div>
+                            </td>
+                            <td class="slds-cell-wrap">
+                                <div class="slds-truncate">{!tb.Badges__c}</div>
+                            </td>
+                            <td class="slds-cell-wrap">
+                                <div class="slds-truncate">{!tb.Trails__c}</div>
+                            </td>
+                            <td class="slds-cell-wrap" style="white-space:nowrap;">
+                                <div class="slds-truncate">{!tb.Trailblazer_Since__c}</div>
+                            </td>
+                            <td class="slds-cell-wrap">
+                                <div class="slds-truncate">
+                                    <a href="{!tb.Profile_Link__c}" target="_blank" >
+                                        Open&nbsp;&nbsp;<lightning:icon iconName="utility:new_window" size="x-small"/>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </table>
+            </div>
+        </div>
+    </div>
+</aura:component>

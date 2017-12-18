@@ -4,7 +4,7 @@
 * Description: 
 -->
 <apex:page id="CreateContact" standardController="Contact">
-    <apex:form>
+    <apex:form >
         <apex:inputField value="{!Contact.FirstName}"/>
         <apex:inputField value="{!Contact.LastName}"/>
         <apex:inputField value="{!Contact.Email}"/>

@@ -1,55 +1,74 @@
 /*****************************************
 * File: SecretSantaController
-* Author: meruff
+* Author: detonation0
 * Description: Controller for secretSanta.page
 ******************************************/
 public without sharing class SecretSantaController {
-    private static final Set<String> PLAYERS = new Set<String>{ 'Mathew', 'Michael', 'Daniel', 'Eric', 'Christine', 'Charlene' };
-
+    public Map<String, Secret_Santa__c> secretSantaMap { get; set; }
     public Integer page { get; set; }
-    public Set<String> names { get; set; }
-    public String selectedName { get; set; }
-    public String currentPlayers { get; set; }
-    public String selectedGiftee { get; set; }
+    public Set<String> playersStillLeft { get; set; }
+    public Set<String> alreadyPickedNamesForGifts { get; set; }
+    public String currentlySelectedUser { get; set; }
+    public String currentPlayersString { get; set; }
+    public String randomlySelectedGiftee { get; set; }
     public String email { get; set; }
 
     public SecretSantaController() {
         page = 1;
-        names = PLAYERS;
-        currentPlayers = '';
-        List<Secret_Santa__c> existingPlayers = new List<Secret_Santa__c>();
+        playersStillLeft = new Set<String>();
+        alreadyPickedNamesForGifts = new Set<String>();
+        secretSantaMap = new Map<String, Secret_Santa__c>();
+        currentlySelectedUser = '';
+        currentPlayersString = '';
+        randomlySelectedGiftee = '';
+        email = '';
+        Integer numOfPlayers = 0;
 
-        existingPlayers = [
-            SELECT Secret_Santa__c, Giftee__c
+        List<Secret_Santa__c> allSecretSantas = new List<Secret_Santa__c>([
+            SELECT Name, Secret_Santa_Wants__c, Secret_Santa_Giftee__c, Secret_Santa_Giftee__r.Name
             FROM Secret_Santa__c
-        ];
+        ]);
 
-        for (Secret_Santa__c ss : existingPlayers) {
-            if (names.contains(ss.Secret_Santa__c)) {
-                names.remove(ss.Secret_Santa__c);
+        for (Secret_Santa__c ss : allSecretSantas) {
+            secretSantaMap.put(ss.Name, ss);
+
+            if (String.isEmpty(ss.Secret_Santa_Giftee__c)) {
+                playersStillLeft.add(ss.Name);
+            } else {
+                numOfPlayers++;
+                alreadyPickedNamesForGifts.add(ss.Secret_Santa_Giftee__r.Name);
             }
         }
 
-        if (existingPlayers.size() == 0) {
-            currentPlayers = 'There are currently no players signed up to play...';
+        System.debug('merf secretSantaMap: ' + secretSantaMap);
+
+        if (numOfPlayers == 0) {
+            currentPlayersString = 'There are currently no players signed up to play...';
         } else {
-            currentPlayers = 'There are currently ' + existingPlayers.size() + ' people who have signed up to play...';
+            currentPlayersString = 'There are currently ' + numOfPlayers + ' people who have signed up to play...';
         }
     }
 
+    /**
+     * Generates a List of Named SelectOptions for the User to select from.
+     *
+     * @return options, the List of SelectOptions.
+     */
     public List<SelectOption> getNameOptions() {
         List<SelectOption> options = new List<SelectOption>();
         options.add(new SelectOption('', '--Select--'));
 
-        for (String s : names) {
+        for (String s : playersStillLeft) {
             options.add(new SelectOption(s, s));
         }
 
         return options;
     }
 
-    public void generateGiftee() {
-        // copypasta
+    /**
+     * Generates a random Giftee for the Secret Santa and assigns them.
+     */
+    public void generateGifteeAndAssign() {
         String emailRegex = '^[a-zA-Z0-9._|\\\\%#~`=?&/$^*!}{+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$';
         Pattern MyPattern = Pattern.compile(emailRegex);
         Matcher MyMatcher = MyPattern.matcher(email);
@@ -59,35 +78,45 @@ public without sharing class SecretSantaController {
             return;
         }
 
-        List<String> randList = new list<String>(names);
+        System.debug('merf person selected as SS: ' + currentlySelectedUser);
+        System.debug('merf alreadyPickedNames: ' + alreadyPickedNamesForGifts);
 
-        do {
-            selectedGiftee = randList[Integer.valueOf(Math.random() * (randList.size()))];
-        } while (selectedGiftee == selectedName);
+        // Randomly select a giftee and assign them to the Secret Santa.
+        List<String> allNames = new List<String>(secretSantaMap.keySet());
+        List<String> gifteesLeftToChooseFrom = new List<String>();
 
-        insertGiftee();
-    }
+        for (String s : allNames) {
+            if (!alreadyPickedNamesForGifts.contains(s)) {
+                gifteesLeftToChooseFrom.add(s);
+            }
+        }
 
-    public void insertGiftee() {
-        Secret_Santa__c newSS = new Secret_Santa__c(
-            Name = selectedName + ' ' + System.now(),
-            Secret_Santa__c = selectedName,
-            Giftee__c = selectedGiftee,
-            SS_Email__c = email
-        );
+        if (playersStillLeft.size() == 2 && new Set<String>(gifteesLeftToChooseFrom).contains(currentlySelectedUser)) {
+            for (String s : gifteesLeftToChooseFrom) {
+                if (!s.equals(currentlySelectedUser)) {
+                    randomlySelectedGiftee = s;
+                }
+            }
+        } else {
+            do {
+                randomlySelectedGiftee = gifteesLeftToChooseFrom[Integer.valueOf(Math.random() * (gifteesLeftToChooseFrom.size()))];
+            } while (currentlySelectedUser == randomlySelectedGiftee || alreadyPickedNamesForGifts.contains(randomlySelectedGiftee));
+        }
+
+        // Update the Secret Santa with the email provided by the User.
+        Secret_Santa__c ssToUpdate = secretSantaMap.get(currentlySelectedUser);
+        ssToUpdate.Secret_Santa_Giftee__c = secretSantaMap.get(randomlySelectedGiftee).Id;
+        ssToUpdate.SS_Email__c = email;
 
         try {
-            insert newSS;
-            createSuccessEmail();
+            update ssToUpdate;
+
+            // Create success email and send
+            EmailService.sendMail(EmailService.createSSEmail(email, currentlySelectedUser, secretSantaMap.get(randomlySelectedGiftee)));
             page4();
         } catch (Exception e) {
-            ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR,'ERROR: Problem inserting secret Santa, please tell Mat.'));
+            ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR,'ERROR! Please let Mat know, here\'s the message:' + e.getMessage() + e.getLineNumber()));
         }
-    }
-
-    public void createSuccessEmail() {
-        Messaging.SingleEmailMessage email = EmailService.createSSEmail(email, selectedName, selectedGiftee);
-        EmailService.sendMail(email);
     }
 
     public void page1() {

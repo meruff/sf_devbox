@@ -4,6 +4,8 @@
 * Description: A class to call Trailhead profiles and update their related Objects in Salesforce.
 ******************************************/
 global class PopulateTrailblazers implements Schedulable {
+    public static final String TRAILHEAD_URL = 'https://trailhead.salesforce.com/users/profiles/';
+
     global void execute(SchedulableContext SC) {
         calloutToTrailhead();
     }
@@ -19,6 +21,8 @@ global class PopulateTrailblazers implements Schedulable {
     @future(callout=true)
     public static void calloutToTrailhead() {
         List<Trailblazer__c> trailblazersToUpsert = new List<Trailblazer__c>();
+        List<Badge__c> badgesToUpsert = new List<Badge__c>();
+        Map<String, Trailblazer__c> trailblazerMap = new Map<String, Trailblazer__c>();
 
         for (Trailblazer__c trailblazer : [
             SELECT Id, Name, Badges__c, Points__c, Trails__c, Trailblazer_Since__c, Profile_Link__c,
@@ -27,17 +31,31 @@ global class PopulateTrailblazers implements Schedulable {
         ]) {
             Http h = new Http();
             HttpRequest req = new HttpRequest();
-            req.setEndpoint('https://trailhead.salesforce.com/users/profiles/' + trailblazer.Profile_Id__c);
+            req.setEndpoint(TRAILHEAD_URL + trailblazer.Profile_Id__c);
             req.setMethod('GET');
             HttpResponse res = h.send(req);
 
             Trailblazer__c newBlazer = populateTrailblazer(res.getBody());
             newBlazer.Profile_Id__c = trailblazer.Profile_Id__c;
+            newBlazer.Profile_Link__c = TRAILHEAD_URL + trailblazer.Profile_Id__c;
+            trailblazerMap.put(newBlazer.Profile_Id__c, newBlazer);
             trailblazersToUpsert.add(newBlazer);
+//            badgesToUpsert.addAll(getTrailblazerBadges(res.getBody(), newBlazer));
         }
 
         if (trailblazersToUpsert.size() > 0) {
             upsert trailblazersToUpsert Profile_Id__c;
+        }
+
+        if (badgesToUpsert.size() > 0) {
+            for (Badge__c b : badgesToUpsert) {
+                String profileId = b.Upsert_Key__c.split('.')[0];
+                if (trailblazerMap.containsKey(profileId)) {
+                    b.Trailblazer__c = trailblazerMap.get(profileId).Id;
+                }
+            }
+
+            upsert badgesToUpsert Upsert_Key__c;
         }
     }
 
@@ -137,5 +155,40 @@ global class PopulateTrailblazers implements Schedulable {
         }
 
         return tb;
+    }
+
+    /**
+     * @description Parses the resBody for the User's Badge records.
+     * @param resBody, the body of the user's Trailhead profile. Used to parse data for updating the Traiblazer__c record.
+     * @param tb, The Trailblazer__c record to use to attach the upserted Badge__c records to.
+     * @return a List of Badge__c records for the Trailblazer.
+     */
+    public static List<Badge__c> getTrailblazerBadges(String resBody, Trailblazer__c tb) {
+        List<Badge__c> newBadges = new List<Badge__c>();
+        String badgesString = resBody.substringBetween('\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020all:', '},\n');
+        List<PopulateTrailblazers.BadgesWrapper> badges = (List<PopulateTrailblazers.BadgesWrapper>) JSON.deserialize(badgesString,  List<PopulateTrailblazers.BadgesWrapper>.class);
+
+        for (PopulateTrailblazers.BadgesWrapper badge : badges) {
+            Badge__c newBadge = new Badge__c(
+                Trailblazer__c = tb.Id,
+                Name = badge.title,
+                Points__c = badge.points,
+                Icon_Link__c = badge.icon_url,
+                Date_Earned__c = badge.finished_at,
+                Type__c = badge.badge_type.capitalize(),
+                Upsert_Key__c = tb.Profile_Id__c + '.' + badge.title // Create Upsert Key here
+            );
+            newBadges.add(newBadge);
+        }
+
+        return newBadges;
+    }
+
+    public class BadgesWrapper {
+        public String title { get; set; }
+        public String icon_url { get; set; }
+        public String points { get; set; }
+        public DateTime finished_at { get; set; }
+        public String badge_type { get; set; }
     }
 }

@@ -12,7 +12,7 @@
                 <apex:inputCheckbox immediate="true"/>Tank 5
                 <apex:inputCheckbox immediate="true"/>Tank 6
             </apex:pageBlockSection>
-            <apex:pageBlockButtons>
+            <apex:pageBlockButtons >
                 <!--Adding Save Button-->
                 <apex:commandButton value="Save" action="{!save}"/>
             </apex:pageBlockButtons>

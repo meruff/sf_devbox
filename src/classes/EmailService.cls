@@ -4,20 +4,24 @@
 * Description: Simple Email Messaging Serivce Class
 ******************************************/
 public class EmailService {
-    public static Messaging.SingleEmailMessage createSSEmail(String toAdd, String toName, String selectedGiftee) {
+    public static Messaging.SingleEmailMessage createSSEmail(String toAdd, String toName, Secret_Santa__c selectedGiftee) {
         Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
         email.setToAddresses(new List<String>{ toAdd });
         email.setReplyTo('mathew.ruff@gmail.com');
         email.setSenderDisplayName('Mathew Ruff');
-        email.setSubject('Ruff Secret Santa 2016');
+        email.setSubject('Ruff Secret Santa 2017');
 
         String body = '' +
             'Hello ' + toName + '!<br /><br />' +
-            'You got ' + selectedGiftee + ' as your Secret Santa giftee! This email is just a reminder in case ' +
-            'you forget who you got. Remember, gifts are no more than $50.<br /><br />' +
-            'Thanks for playing,<br /><br />' +
-            'Mat';
+            'You got ' + selectedGiftee.Name + ' as your Secret Santa giftee! This email is just a reminder in case ' +
+            'you forget who you got. Remember, gifts are no more than $50.<br /><br />';
 
+        if (selectedGiftee.Secret_Santa_Wants__c != '') {
+            body += 'Here are some items ' + selectedGiftee.Name + ' would want for Xmas to help you out:<br />' +
+                selectedGiftee.Secret_Santa_Wants__c + '<br/>';
+        }
+
+        body += 'Thanks for playing,<br /><br />Mat';
         email.setHtmlBody(body);
 
         return email;

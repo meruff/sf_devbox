@@ -1,0 +1,8 @@
+.THIS .leaderCrown {
+    width: 25px;
+    margin-top: -44px;
+    margin-right: -25px;
+    -ms-transform: rotate(-27deg);
+    -webkit-transform: rotate(-27deg);
+    transform: rotate(-27deg);
+}
