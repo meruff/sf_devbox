@@ -1,0 +1,9 @@
+<!--
+* File: camping.cmp
+* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Description:  
+-->
+<aura:component description="camping">
+    <c:campingHeader />
+    <c:campingList />
+</aura:component>

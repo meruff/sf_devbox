@@ -14,7 +14,6 @@ public class CampingListController {
 
     @AuraEnabled
     public static Camping_Item__c saveItem(Camping_Item__c item) {
-        System.debug('merf: ' + item);
         insert item;
         return item;
     }

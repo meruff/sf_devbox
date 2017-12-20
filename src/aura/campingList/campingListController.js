@@ -1,35 +1,35 @@
+/*****************************************
+ * File: campingListController.js
+ * Author: Mathew Ruff, Sierra-Cedar
+ * Description: Controller logic for
+ ******************************************/
 ({
-    doInit : function (component, event, helper) {
+    doInit: function (component, event, helper) {
         var action = component.get("c.getItems");
-
-        action.setCallback(this, function(response) {
-
+        action.setCallback(this, function(response){
             var state = response.getState();
-
-            if (component.isValid() && state == 'SUCCESS') {
-                component.set("v.items", response.getReturnValue());
-            } else {
-                console.log('Failed with state: ' + state);
+            if (state === "SUCCESS") {
+                var items = component.get("v.items");
+                items.push(response.getReturnValue());
+                component.set("v.items", items);
             }
         });
-
         $A.enqueueAction(action);
     },
-    handleAddItem: function(component, event, helper) {
+    handleAddItem: function (component, event, helper) {
         var item = event.getParam("item");
 
+        var theItems = component.get("v.items");
         var action = component.get("c.saveItem");
-        //json stringify is not needed I think.
         action.setParams({
             "item": item
         });
-
         action.setCallback(this, function(response){
             var state = response.getState();
-            if (component.isValid() && state === "SUCCESS") {
-                var items = component.get("v.items");
-                items.push(item);
-                component.set("v.items",items);
+            if (state === "SUCCESS") {
+                theItems.push(response.getReturnValue());
+                component.set("v.items", theItems);
+                component.set("v.newItem", "{ 'sobjectType':'Camping_Item__c', 'Name':'', 'Price__c':0, 'Quantity__c':0, 'Packed__c':false }");
             }
         });
         $A.enqueueAction(action);

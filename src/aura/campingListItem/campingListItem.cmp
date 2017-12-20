@@ -1,37 +1,15 @@
+<!--
+* File: campingListItem.cmp
+* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Description:  
+-->
 <aura:component description="campingListItem">
     <aura:attribute name="item" type="Camping_Item__c" required="true"/>
 
-    <div class="slds-panel slds-grid slds-grid--vertical slds-nowrap">
-        <div class="slds-form--stacked slds-grow slds-scrollable--y">
-            <div class="slds-panel__section">
-                <h3 class="slds-text-heading--small slds-m-bottom--medium"><ui:outputText value="{!v.item.Name}"/></h3>
-                <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
-                    <span class="slds-form-element__label">Name</span>
-                    <div class="slds-form-element__control">
-                        <span class="slds-form-element__static"><ui:outputText value="{!v.item.Name}"/></span>
-                    </div>
-                </div>
-                <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
-                    <span class="slds-form-element__label">Quantity</span>
-                    <div class="slds-form-element__control">
-                        <span class="slds-form-element__static"><ui:outputCurrency value="{!v.item.Quantity}"/></span>
-                    </div>
-                </div>
-                <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
-                    <span class="slds-form-element__label">Price</span>
-                    <div class="slds-form-element__control">
-                        <span class="slds-form-element__static"><ui:outputCurrency value="{!v.item.Price__c}"/></span>
-                    </div>
-                </div>
-                <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
-                    <span class="slds-form-element__label">Packed</span>
-                    <div class="slds-form-element__control">
-                        <span class="slds-form-element__static"><ui:outputCheckbox value="{!v.item.Packed__c}"/></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <p>Name: {!v.item.Name}</p>
+    <p>Price: <lightning:formattedNumber value="{!v.item.Price__c}" style="currency"/></p>
+    <p>Quantity: <lightning:formattedNumber value="{!v.item.Quantity__c}"/></p>
+    <p>Packed: <lightning:input type="toggle" name="packed" label="Packed" checked="{!v.item.Packed__c}"/></p>
 
-    <hr />
+    <lightning:button label="Packed!" onclick="{!c.packItem}"/>
 </aura:component>

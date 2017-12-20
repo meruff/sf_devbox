@@ -1,10 +1,13 @@
+/*****************************************
+ * File: campingListFormHelper.js
+ * Author: Mathew Ruff, Sierra-Cedar
+ * Description: Helper logic for
+ ******************************************/
 ({
-    createItem : function(component, newItem) {
-        // fire event
+    createItem: function (component, item) {
         var addItem = component.getEvent("addItem");
-        addItem.setParams({"item":newItem});
+        addItem.setParams({ "item": item });
         addItem.fire();
-        var newItemStr = "{\"sobjectType\":\"Camping_Item__c\",\"Name\":\"\",\"Price__c\":0,\"Quantity__c\":0,\"Packed__c\":false}";
-        component.set("v.newItem", JSON.parse(newItemStr));
+        component.set("v.newItem", "{ 'sobjectType':'Camping_Item__c', 'Name':'', 'Price__c':0, 'Quantity__c':0, 'Packed__c':false }");
     }
 })
