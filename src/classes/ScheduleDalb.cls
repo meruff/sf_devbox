@@ -43,7 +43,8 @@ global class ScheduleDalb implements Schedulable {
 
         Http h = new Http();
         HttpRequest req = new HttpRequest();
-        req.setEndpoint('https://hooks.slack.com/services/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');
+        // req.setEndpoint('https://hooks.slack.com/services/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');
+        req.setEndpoint('https://discordapp.com/api/webhooks/418098256996990978/HOIEpRpU6VMbtksfVxzxgKxydxCjShbsYDf-Ebw9MbjszVHRwQMZiBqpmh5iQI4VtBgp');
         req.setMethod('POST');
         req.setHeader('Content-Type','application/json');
         req.setBody(jsonMessage);

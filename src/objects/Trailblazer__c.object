@@ -66,6 +66,36 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>Company_Institution__c</fullName>
+        <externalId>false</externalId>
+        <label>Company/Institution</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Job_Role__c</fullName>
+        <externalId>false</externalId>
+        <label>Job Role</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Job_Title__c</fullName>
+        <externalId>false</externalId>
+        <label>Job Title</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>Points__c</fullName>
         <description>Number of Trailhead points</description>
         <externalId>false</externalId>

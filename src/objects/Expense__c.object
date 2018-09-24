@@ -85,7 +85,7 @@
         <fullName>Reimbursed__c</fullName>
         <defaultValue>false</defaultValue>
         <externalId>false</externalId>
-        <label>Reimbursed?</label>
+        <label>Reimbursed</label>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>

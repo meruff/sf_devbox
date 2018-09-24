@@ -1,0 +1,49 @@
+<!--
+* File: DirectMessage.cmp
+* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Description: Allows a user to direct message a specified auto-populated user.
+-->
+<aura:component description="DirectMessage" controller="DirectMessageController">
+    <aura:attribute name="subject" type="String"/>
+    <aura:attribute name="body" type="String"/>
+    <aura:attribute name="recipientId" type="String"/>
+
+    <div class="slds-scope">
+        <div class="slds-p-around_small">
+            <lightning:button label="Send Message" variant="brand" onclick="{!c.toggleModal}" class="commBtn"/>
+
+            <div aria-hidden="true" role="dialog" class="slds-modal" aura:id="messageModal">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.toggleModal}">
+                            <lightning:icon iconName="utility:close"/>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">New Message to Some User</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="slds-form slds-form_stacked">
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <lightning:input aura:id="messageSubject" label="Subject" type="text" value="{!v.subject}" placeholder="What's your message about?"/>
+                                </div>
+                            </div>
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="messageBody">Body</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:inputRichText aura:id="messageBody" value="{!v.body}" placeholder="Enter your message here..." variant="bottom-toolbar" disabledCategories="FORMAT_FONT,ALIGN_TEXT"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button label="Cancel" variant="neutral" onclick="{!c.toggleModal}"/>
+                        <lightning:button label="Send" variant="brand" onclick="{!c.sendMessageToController}"/>
+                    </footer>
+                </div>
+            </div>
+        </div>
+
+        <div aura:id="backdrop" class="slds-backdrop"></div>
+    </div>
+</aura:component>

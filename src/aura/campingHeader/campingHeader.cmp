@@ -5,7 +5,7 @@
 -->
 <aura:component description="campingHeader">
     <lightning:layout class="slds-page-header slds-page-header--object-home">
-        <lightning:layoutItem>
+        <lightning:layoutItem >
             <lightning:icon iconName="action:goal" alternativeText="Camping List"/>
         </lightning:layoutItem>
         <lightning:layoutItem padding="horizontal-small">

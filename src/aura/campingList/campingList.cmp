@@ -20,7 +20,7 @@
                 Add New Camping Item
             </legend>
 
-            <lightning:layout>
+            <lightning:layout >
                 <lightning:layoutItem padding="around-small" size="6">
                     <c:campingListForm newItem="newItem"/>
                 </lightning:layoutItem>

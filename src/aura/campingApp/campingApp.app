@@ -4,5 +4,5 @@
 * Description: 
 -->
 <aura:application description="campingApp" extends="force:SLDS">
-    <c:camping/>
+    <c:camping />
 </aura:application>

@@ -37,10 +37,6 @@
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
-        <actionName>SaveEdit</actionName>
-        <type>Default</type>
-    </actionOverrides>
-    <actionOverrides>
         <actionName>Today</actionName>
         <type>Default</type>
     </actionOverrides>
@@ -84,6 +80,9 @@
     </fields>
     <fields>
         <fullName>IsPrivate</fullName>
+    </fields>
+    <fields>
+        <fullName>IsReminderSet</fullName>
     </fields>
     <fields>
         <fullName>IsVisibleInSelfService</fullName>

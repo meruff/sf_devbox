@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <description>A list (semi-colon separated string) of users for Secret Santa</description>
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>Users__c</fullName>
+        <description>A list of Users (separated by a semi-colon) who will take part in Secret Santa</description>
+        <externalId>false</externalId>
+        <label>Users</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <label>Secret Santa Users</label>
+    <visibility>Public</visibility>
+</CustomObject>
