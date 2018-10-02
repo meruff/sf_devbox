@@ -1,6 +1,6 @@
 /*****************************************
 * File: PopulateCertifications
-* Author: Mathew Ruff, Sierra-Cedar
+* Author: meruff
 * Description: Class to callout to the Salesforce Certificatoin Site and populate Salesforce_Certifications__c
 ******************************************/
 global class PopulateCertifications implements Schedulable {

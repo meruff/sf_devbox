@@ -1,6 +1,6 @@
 <!--
 * File: NewCaseList.cmp
-* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Author: meruff
 * Description: 
 -->
 <apex:page id="NewCaseList" controller="NewCaseListController">

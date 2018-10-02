@@ -1,6 +1,6 @@
 /*****************************************
 * File: AccountProcessor
-* Author: Mathew Ruff, Sierra-Cedar
+* Author: meruff
 * Description: Class to process accounts (Trailhead)
 ******************************************/
 public class AccountProcessor {

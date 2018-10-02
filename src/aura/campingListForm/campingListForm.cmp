@@ -1,6 +1,6 @@
 <!--
 * File: campingListForm.cmp
-* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Author: meruff
 * Description:  
 -->
 <aura:component description="campingListForm">

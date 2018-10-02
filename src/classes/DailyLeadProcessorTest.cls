@@ -1,6 +1,6 @@
 /*****************************************
 * File: DailyLeadProcessorTest
-* Author: Mathew Ruff, Sierra-Cedar
+* Author: meruff
 * Description: Unit Tests for DailyLeadProcessor.cls (trailhead)
 ******************************************/
 @IsTest

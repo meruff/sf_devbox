@@ -1,6 +1,6 @@
 <!--
 * File: ContactView.cmp
-* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Author: meruff
 * Description: 
 -->
 <apex:page id="ContactView" standardController="Contact">

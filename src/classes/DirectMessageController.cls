@@ -1,5 +1,5 @@
 /**
-* @author Mathew Ruff, Sierra-Cedar
+* @author meruff
 * @date 8/27/18
 *
 * Controller Logic for DirectMessage.cmp

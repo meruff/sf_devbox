@@ -1,6 +1,6 @@
 <!--
 * File: CreateContact.cmp
-* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Author: meruff
 * Description: 
 -->
 <apex:page id="CreateContact" standardController="Contact">

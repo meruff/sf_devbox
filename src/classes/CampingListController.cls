@@ -1,6 +1,6 @@
 /*****************************************
 * File: CampingListController
-* Author: Mathew Ruff, Sierra-Cedar
+* Author: meruff
 * Description: 
 ******************************************/
 public class CampingListController {

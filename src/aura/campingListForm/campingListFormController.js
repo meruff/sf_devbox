@@ -1,6 +1,6 @@
 /*****************************************
  * File: campingListFormController.js
- * Author: Mathew Ruff, Sierra-Cedar
+ * Author: meruff
  * Description: Controller logic for
  ******************************************/
 ({

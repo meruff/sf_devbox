@@ -1,6 +1,6 @@
 /*****************************************
 * File: RandomContactFactory
-* Author: Mathew Ruff, Sierra-Cedar
+* Author: meruff
 * Description: Random Contact Generator for Unit Tests
 ******************************************/
 public class RandomContactFactory {

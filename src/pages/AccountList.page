@@ -1,6 +1,6 @@
 <!--
 * File: AccountList.cmp
-* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Author: meruff
 * Description: 
 -->
 <apex:page id="AccountList" standardController="Account" recordSetVar="accounts">

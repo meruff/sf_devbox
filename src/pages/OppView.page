@@ -1,6 +1,6 @@
 <!--
 * File: OppView.cmp
-* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Author: meruff
 * Description: 
 -->
 <apex:page id="OppView" standardController="Opportunity">

@@ -1,6 +1,6 @@
 /*****************************************
 * File: AccountManagerTest
-* Author: Mathew Ruff, Sierra-Cedar
+* Author: meruff
 * Description: Unit Tests for AccountManager.cls
 ******************************************/
 @IsTest

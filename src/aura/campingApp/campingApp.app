@@ -1,6 +1,6 @@
 <!--
 * File: campingApp
-* Author: Mathew Ruff, Sierra-Cedar, Inc.
+* Author: meruff
 * Description: 
 -->
 <aura:application description="campingApp" extends="force:SLDS">

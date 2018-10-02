@@ -1,6 +1,6 @@
 /*****************************************
 * File: AnimalLocatorMock
-* Author: Mathew Ruff, Sierra-Cedar
+* Author: meruff
 * Description: Mock callout class for AnimalLocator.cls
 ******************************************/
 @IsTest
