@@ -1,6 +1,6 @@
 /*****************************************
 * File: AccountManager
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: REST Service for Trailhead Module "Apex Web Services" found here:
 * https://trailhead.salesforce.com/en/modules/apex_integration_services/units/apex_integration_webservices
 ******************************************/

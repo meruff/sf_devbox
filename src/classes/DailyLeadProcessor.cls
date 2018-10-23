@@ -1,6 +1,6 @@
 /*****************************************
 * File: DailyLeadProcessor
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: Updates Lead records with a specific LeadSource (trailhead)
 ******************************************/
 global class DailyLeadProcessor implements Schedulable {

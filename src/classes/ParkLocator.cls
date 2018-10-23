@@ -1,6 +1,6 @@
 /*****************************************
 * File: ParkLocator
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: Used to return an array of Park Names for Trailhead
 * found at: https://trailhead.salesforce.com/modules/apex_integration_services/units/apex_integration_soap_callouts
 ******************************************/

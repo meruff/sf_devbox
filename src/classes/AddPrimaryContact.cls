@@ -1,6 +1,6 @@
 /*****************************************
 * File: AddPrimaryContact
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: Inserts the same Contact for each Account for a specific state
 ******************************************/
 public class AddPrimaryContact implements Queueable {

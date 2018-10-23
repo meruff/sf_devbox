@@ -1,6 +1,6 @@
 /*****************************************
 * File: ScheduleDalb
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: Post dalb complains as Slackbot whenever this class is scheduled.
 ******************************************/
 global class ScheduleDalb implements Schedulable {

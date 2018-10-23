@@ -1,6 +1,6 @@
 /*****************************************
 * File: AnimalLocatorTest
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: Unit Tests for AnimalLocator.cls
 ******************************************/
 @isTest

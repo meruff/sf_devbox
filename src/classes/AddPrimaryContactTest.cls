@@ -1,6 +1,6 @@
 /*****************************************
 * File: AddPrimaryContactTest
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: Unit Tests for AddPrimaryContact.cls (trailhead)
 ******************************************/
 @IsTest

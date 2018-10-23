@@ -1,6 +1,6 @@
 /*****************************************
 * File: LeadProcessorTest
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: Unit Tests for LeadProcessor.cls (trailhead)
 ******************************************/
 @IsTest

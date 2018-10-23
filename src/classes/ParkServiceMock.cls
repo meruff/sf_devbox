@@ -1,6 +1,6 @@
 /*****************************************
 * File: ParkServiceMock
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: Mock SOAP callout for ParkLocatorTest.cls
 ******************************************/
 @IsTest

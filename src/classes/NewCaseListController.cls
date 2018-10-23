@@ -1,6 +1,6 @@
 /*****************************************
 * File: NewCaseListController
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: 
 ******************************************/
 public class NewCaseListController {

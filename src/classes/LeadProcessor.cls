@@ -1,6 +1,6 @@
 /*****************************************
 * File: LeadProcessor
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: Batch class to update all Leads with a new LeadSource (trailhead)
 ******************************************/
 global class LeadProcessor implements Database.Batchable<sObject>, Database.Stateful {

@@ -1,6 +1,6 @@
 /*****************************************
 * File: ParkLocatorTest
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: Unit Tests for ParkLocator.cls
 ******************************************/
 @isTest

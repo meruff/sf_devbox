@@ -1,6 +1,6 @@
 /*****************************************
 * File: AccountProcessorTest
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: Unit Tests for AccountProcessor.cls
 ******************************************/
 @IsTest

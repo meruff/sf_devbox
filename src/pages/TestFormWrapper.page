@@ -1,7 +1,28 @@
-<!--
-* File: TestFormWrapper.page
-* Author: Mathew Ruff, Sierra-Cedar, Inc.
-* Description: 
--->
-<apex:page id="TestFormWrapper">
+<apex:page id="TestFormWrapper" controller="TestFormWrapperController" showHeader="false" sideBar="false" docType="HTML-5.0" standardStylesheets="false">
+    <title>TEST</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="theme-color" content="#444"/>
+    <apex:slds/>
+    <style>
+        body {
+            background-color: #444 !important;
+        }
+    </style>
+    <div class="slds-scope" style="max-width:1200px;margin:auto;">
+        <div class="slds-card slds-p-horizontal_medium slds-m-around_medium">
+            <div class="slds-text-heading_large slds-p-vertical_medium">THIS FORM SHIT RIGHT HERE</div>
+            <apex:form id="mainForm">
+                <apex:actionFunction name="refreshComponent" rerender="componentPanel"/>
+                <div class="slds-form slds-form_horizontal slds-p-vertical_medium">
+                    <apex:outputPanel id="componentPanel">
+                        <c:FormBuilder sObj="{!theContact}" fields="{!formData}"/>
+                    </apex:outputPanel>
+                </div>
+
+                <div class="slds-clearfix slds-p-bottom_medium">
+                    <apex:commandButton styleClass="slds-button slds-button--brand slds-float_right" action="{!saveContact}" reRender="nothing"/>
+                </div>
+            </apex:form>
+        </div>
+    </div>
 </apex:page>

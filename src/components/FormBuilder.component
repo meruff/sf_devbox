@@ -1,7 +1,149 @@
 <!--
 * File: FormBuilder.component
-* Author: Mathew Ruff, Sierra-Cedar, Inc.
-* Description: 
+* Author: meruff
+* Description: A Visualforce component that displays FormField data.
 -->
 <apex:component id="FormBuilder">
+    <apex:attribute name="sObj" type="SObject" description="The object to pull fields from."/>
+    <apex:attribute name="fields" type="FormField[]" description="A custom wrapper list that holds field information."/>
+
+    <div xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
+        <apex:outputPanel id="fieldsRepeat">
+            <apex:repeat value="{!fields}" var="field">
+                <apex:outputPanel rendered="{!IF(field.renderedIfValue != null, IF(field.dependentField.value == field.renderedIfValue, true, false), true)}">
+                    <div class="slds-form-element slds-m-vertical_small">
+                        <!-- Label - only rendered for text, picklist -->
+                        <apex:outputPanel rendered="{!field.type != 'HEADER' && field.type != 'BOOLEAN'}">
+                            <label class="slds-form-element__label" style="vertical-align:top;margin-top:.45rem;">
+                                <apex:outputPanel rendered="{!field.required}">
+                                    <abbr class="slds-required" title="required">*</abbr>
+                                </apex:outputPanel>
+                                {!field.label}
+                            </label>
+                        </apex:outputPanel>
+
+
+                        <!-- Header -->
+                        <apex:outputPanel rendered="{!field.type == 'HEADER'}">
+                            <div class="slds-p-top_medium">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__label slds-form-element__legend slds-text-title_caps">{!field.label}</div>
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+
+                        <!-- Text -->
+                        <apex:outputPanel rendered="{!field.type == 'STRING'}">
+                            <div class="slds-form-element__control">
+                                <apex:inputField styleClass="slds-input" value="{!sObj[field.name]}" required="{!field.required}"/>
+                            </div>
+                        </apex:outputPanel>
+
+                        <!-- Long Text -->
+                        <apex:outputPanel rendered="{!field.type == 'TEXTAREA'}">
+                            <div class="slds-form-element__control">
+                                <apex:inputField styleClass="slds-textarea" value="{!sObj[field.name]}" required="{!field.required}"/>
+                            </div>
+                        </apex:outputPanel>
+
+                        <!-- Email -->
+                        <apex:outputPanel rendered="{!field.type == 'EMAIL'}">
+                            <div class="{!IF(field.hasIcon, 'slds-form-element__control slds-input-has-icon slds-input-has-icon_left', 'slds-form-element__control')}">
+                                <apex:outputPanel rendered="{!field.hasIcon}">
+                                    <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                        <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#email')}"></use>
+                                    </svg>
+                                </apex:outputPanel>
+
+                                <apex:outputPanel rendered="{!field.name != null}">
+                                    <apex:inputField type="email" styleClass="slds-input" value="{!sObj[field.name]}" required="{!field.required}"/>
+                                </apex:outputPanel>
+
+                                <apex:outputPanel rendered="{!field.name == null}">
+                                    <apex:input type="email" styleClass="slds-input" value="{!field.customStringRef.value}" required="{!field.required}"/>
+                                </apex:outputPanel>
+                            </div>
+                        </apex:outputPanel>
+
+                        <!-- Date -->
+                        <apex:outputPanel rendered="{!field.type == 'DATE'}">
+                            <div class="slds-form-element__control">
+                                <apex:inputField type="date" styleClass="slds-input" value="{!sObj[field.name]}" required="{!field.required}"/>
+                            </div>
+                        </apex:outputPanel>
+
+                        <!-- Phone -->
+                        <apex:outputPanel rendered="{!field.type == 'PHONE'}">
+                            <div class="{!IF(field.hasIcon, 'slds-form-element__control slds-input-has-icon slds-input-has-icon_left', 'slds-form-element__control')}">
+                                <apex:outputPanel rendered="{!field.hasIcon}">
+                                    <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                        <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#number_input')}"></use>
+                                    </svg>
+                                </apex:outputPanel>
+                                <apex:inputField type="tel" styleClass="slds-input" value="{!sObj[field.name]}" required="{!field.required}"/>
+                            </div>
+                        </apex:outputPanel>
+
+                        <!-- Checkbox -->
+                        <apex:outputPanel rendered="{!field.type == 'BOOLEAN'}">
+                            <div class="slds-form-element__control">
+                                <div class="slds-checkbox">
+                                    <label class="slds-checkbox__label">
+                                        <apex:inputCheckbox value="{!sObj[field.name]}"/>
+                                        <span class="slds-checkbox_faux"></span>
+                                        <span class="slds-form-element__label">{!field.label}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+
+                        <!-- Select -->
+                        <apex:outputPanel rendered="{!field.type == 'PICKLIST'}">
+                            <div class="slds-form-element__control">
+                                <div class="slds-select_container">
+                                    <!-- Standard Picklist -->
+                                    <apex:outputPanel rendered="{!field.options == null}">
+                                        <apex:inputField value="{!sObj[field.name]}" styleClass="slds-select" required="{!field.required}"/>
+                                    </apex:outputPanel>
+
+                                    <!-- Custom Picklist -->
+                                    <apex:outputPanel rendered="{!field.options != null && field.Name != null}">
+                                        <apex:selectList value="{!sObj[field.name]}" size="1" styleClass="slds-select" required="{!field.required}">
+                                            <apex:selectOptions value="{!field.options}"/>
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+
+                                    <!-- Custom Value Picklist -->
+                                    <apex:outputPanel rendered="{!field.options != null && field.Name == null}">
+                                        <apex:actionRegion>
+                                            <apex:selectList value="{!field.customStringRef.value}" size="1" styleClass="slds-select" required="{!field.required}">
+                                                <apex:selectOptions value="{!field.options}"/>
+                                                <apex:actionSupport event="onchange" onComplete="refreshComponent();"/>
+                                            </apex:selectList>
+                                        </apex:actionRegion>
+                                    </apex:outputPanel>
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+
+                        <!-- Multi-Select -->
+                        <!-- TODO -->
+                        <!--<apex:outputPanel rendered="{!field.type == 'MULTIPICKLIST'}">-->
+                        <!--<span id="picklist-group-label" class="slds-form-element__label slds-form-element__legend">{!field.label}</span>-->
+                        <!--<div class="slds-form-element__control">-->
+                        <!--<apex:inputField value="{!sObj[field.name]}" styleClass=""/>-->
+                        <!--</div>-->
+                        <!--</apex:outputPanel>-->
+
+                        <!-- Currency -->
+                        <apex:outputPanel rendered="{!field.type == 'CURRENCY'}">
+                            <div class="slds-form-element__control">
+                                <apex:inputField styleClass="slds-input" value="{!sObj[field.name]}" required="{!field.required}"/>
+                            </div>
+                        </apex:outputPanel>
+                    </div>
+                </apex:outputPanel>
+            </apex:repeat>
+        </apex:outputPanel>
+    </div>
 </apex:component>

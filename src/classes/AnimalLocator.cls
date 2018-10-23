@@ -1,6 +1,6 @@
 /*****************************************
 * File: AnimalLocator
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: Trailhead Class for a HTTP callout to get Animal Names
 * used here: https://trailhead.salesforce.com/modules/apex_integration_services/units/apex_integration_rest_callouts
 ******************************************/
