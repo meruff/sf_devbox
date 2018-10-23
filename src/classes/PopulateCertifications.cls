@@ -4,7 +4,7 @@
 * Description: Class to callout to the Salesforce Certificatoin Site and populate Salesforce_Certifications__c
 ******************************************/
 global class PopulateCertifications implements Schedulable {
-    private static final String CALLOUT_URL = 'http://certification.salesforce.com/certification-detail-print?conId=';
+    public static final String CALLOUT_URL = 'https://certification.secure.force.com/certificationsite/services/apexrest/credential?searchString=';
 
     global void execute(SchedulableContext SC) {
         findCertifications();
@@ -14,7 +14,7 @@ global class PopulateCertifications implements Schedulable {
         findCertifications();
     }
 
-    @future(callout=true)
+    @Future(Callout=true)
     public static void findCertifications() {
         Map<String, Contact> contactMap = new Map<String, Contact>();
 
@@ -25,7 +25,7 @@ global class PopulateCertifications implements Schedulable {
                     FROM Salesforce_Certifications__r
                 )
             FROM Contact
-            WHERE Show_On_Certification_Site__c = true
+            WHERE Show_On_Certification_Site__c = TRUE
         ]);
 
         if (contacts.size() > 0) {
@@ -38,8 +38,7 @@ global class PopulateCertifications implements Schedulable {
     }
 
     public static void calloutToCertSite(Map<String, Contact> contactMap) {
-        List<Contact> contactsToUpdate = new List<Contact>();
-        List<ContactCertWrapper> contactWrappers = new List<ContactCertWrapper>();
+        List<CertWrapper> wrappers = new List<CertWrapper>();
 
         for (String salesforceContactId : contactMap.keySet()) {
             Http h = new Http();
@@ -47,103 +46,63 @@ global class PopulateCertifications implements Schedulable {
             req.setEndpoint(CALLOUT_URL + salesforceContactId);
             req.setMethod('GET');
             HttpResponse res = h.send(req);
+            String body = res.getBody().replaceAll('Full_Name__c', 'fullName');
+            body = body.replaceAll('Certification_Status__r', 'CertStatus');
+            body = body.replaceAll('External_Certification_Type_Name__c', 'certName');
+            body = body.replaceAll('External_Original_Certification_Date__c', 'certDate');
 
-            ContactCertWrapper ccw = new ContactCertWrapper();
-
-            if (contactMap.containsKey(salesforceContactId)) {
-                ccw.c = contactMap.get(salesforceContactId);
-            }
-
-            ccw = populateCCW(res.getBody(), ccw);
-            contactWrappers.add(ccw);
+            wrappers.add((PopulateCertifications.CertWrapper) JSON.deserialize(body, PopulateCertifications.CertWrapper.class));
         }
 
-        if (contactWrappers.size() > 0) {
+        if (!wrappers.isEmpty()) {
             List<Contact> contactsToUpsert = new List<Contact>();
-            List<Salesforce_Certification__c> certifications = new List<Salesforce_Certification__c>();
+            List<Salesforce_Certification__c> certificationsToUpsert = new List<Salesforce_Certification__c>();
 
-            for (ContactCertWrapper ccw : contactWrappers) {
-                contactsToUpsert.add(ccw.c);
-            }
+            for (CertWrapper wrapper : wrappers) {
+                // TODO: Fix Name parsing.
+                contactsToUpsert.add(new Contact(
+                    Certification_Contact_Id__c = wrapper.data[0].Id,
+                    FirstName = wrapper.data[0].fullName.split(' ')[0],
+                    LastName = wrapper.data[0].fullName.split(' ')[1],
+                    Show_On_Certification_Site__c = true
+                ));
 
-            if (contactsToUpdate.size() > 0) upsert contactsToUpsert;
-
-            for (ContactCertWrapper ccw : contactWrappers) {
-                for (Salesforce_Certification__c sc : ccw.certs) {
-                    Boolean isDupe = false;
-                    sc.Contact__c = ccw.c.Id;
-
-                    if (contactMap.containsKey(ccw.c.Certification_Contact_Id__c)) {
-                        for (Salesforce_Certification__c check : contactMap.get(ccw.c.Certification_Contact_Id__c).Salesforce_Certifications__r) {
-                            if (check.Certification_Name__c == sc.Certification_Name__c) {
-                                isDupe = true;
-                                check.Certification_Name__c = sc.Certification_Name__c;
-                                check.Certification_Date__c = sc.Certification_Date__c;
-                                certifications.add(check);
-                            }
-                        }
+                System.debug('merf: ' + wrapper);
+                if (wrapper.data[0].certStatus != null && contactMap.containsKey(wrapper.data[0].Id)) {
+                    for (Cert cert : wrapper.data[0].certStatus.records) {
+                        certificationsToUpsert.add(new Salesforce_Certification__c(
+                            Contact__c = contactMap.get(wrapper.data[0].Id).Id,
+                            Certification_Name__c = cert.certName,
+                            Certification_Date__c = cert.certDate,
+                            Upsert_Key__c = contactMap.get(wrapper.data[0].Id).Id + cert.certName
+                        ));
                     }
-
-                    if (!isDupe) certifications.add(sc);
                 }
             }
 
-            if (certifications.size() > 0) upsert certifications;
+            if (!contactsToUpsert.isEmpty()) upsert contactsToUpsert Certification_Contact_Id__c;
+            if (!certificationsToUpsert.isEmpty()) upsert certificationsToUpsert Upsert_Key__c;
         }
     }
 
-    public static ContactCertWrapper populateCCW(String resBody, ContactCertWrapper ccw) {
-        ccw.c.Show_On_Certification_Site__c = true;
-        Integer indexOfName = resBody.indexOf('data-full-name=');
-        String fullName = resBody.substring(indexOfName).substringBetween(
-            '\"',
-            '\"'
-        );
-        fullName = fullName.trim();
-        String[] temp = fullName.split(' ');
-        String firstName = temp[0];
-        String lastName = temp[1];
-        ccw.c.FirstName = firstName;
-        ccw.c.LastName = lastName;
-
-        Integer lastIndexOfCert = 0;
-
-        for (Integer i = 0; i < resBody.countMatches('ver-search-results-line'); i++) {
-            Salesforce_Certification__c sc = new Salesforce_Certification__c();
-
-            Integer indexOfCert = resBody.indexOf('id=\"cert-name\"') + lastIndexOfCert;
-            String certName = resBody.substring(indexOfCert + lastIndexOfCert).substringBetween(
-                '>',
-                '<'
-            ).trim();
-            sc.Certification_Name__c = certName;
-
-            String subbed = resBody.substring(indexOfCert + lastIndexOfCert);
-            Integer indexOfDate = subbed.indexOf('class=\"date-certified"');
-            String dateCertified = subbed.substring(indexOfDate).substringBetween(
-                'class="date-certified">',
-                '<'
-            ).trim();
-            sc.Certification_Date__c = dateCertified;
-
-            ccw.certs.add(sc);
-            lastIndexOfCert += 184;
-        }
-
-        return ccw;
+    public class CertWrapper {
+        public String status { get; set; }
+        public Data[] data { get; set; }
     }
 
-    public class ContactCertWrapper {
-        public Contact c { get; set; }
-        public List<Salesforce_Certification__c> certs { get; set; }
-        public Integer validCertCount { get; set; }
-        public Integer invalidCertCount { get; set; }
+    public class Data {
+        public String fullName { get; set; }
+        public String Id { get; set; }
+        public CertStatus certStatus { get; set; }
+    }
 
-        public ContactCertWrapper() {
-            c = new Contact();
-            certs = new List<Salesforce_Certification__c>();
-            validCertCount = 0;
-            invalidCertCount = 0;
-        }
+    public class CertStatus {
+        public Integer totalSize { get; set; }
+        public Cert[] records { get; set; }
+    }
+
+    public class Cert {
+        public String certName { get; set; }
+        public String certDate { get; set; }
     }
 }

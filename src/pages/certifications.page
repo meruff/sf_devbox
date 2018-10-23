@@ -1,148 +1,184 @@
-<apex:page id="certifications"
-           controller="CertificationsController"
-           showHeader="false"
-           sideBar="false"
-           standardStylesheets="false"
-           docType="HTML-5.0">
+<apex:page controller="CertificationsController" showHeader="false" sideBar="false" standardStylesheets="false" docType="HTML-5.0">
     <title>Sierra-Cedar Salesforce Certifications</title>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <apex:stylesheet value="{!URLFOR($Resource.bootstrap_337, 'bootstrap-3.3.7-dist/css/bootstrap.min.css')}"/>
+    <apex:slds />
 
     <style>
         body {
             color: #444 !important;
-            background: #f3f3f3 url({!URLFOR($Resource.Trailhead_Leaderboard, 'trailheadLeaderboard/bg.png')}) repeat left top !important;
+            background: #f3f3f3 url("https://developer.salesforce.com/resources2/certification-site/images/icons-background.png") !important;
+            background-size: cover;
         }
 
-        .panel-default>.panel-heading {
-            color: #fff !important;
-            background-color: #06354d !important;
-        }
-
-        .panel-heading {
-            padding: 10px 10px !important;
-        }
-
-        .panel-title {
-            font-weight: 400 !important;
-            text-transform: uppercase;
-            font-size: 14px !important;
+        .slds-scope .slds-card__header {
+            background-color: #15325c !important;
+            color: white !important;
+            padding: .75rem 1rem .75rem 1rem !important;
+            margin: 0 !important;
+            border-top-left-radius: .25rem !important;
+            border-top-right-radius: .25rem !important;
         }
 
         .message {
-            margin-bottom: 15px;
+            margin-top: 10px;
+            background: #c23934;
+            color: white !important;
+            padding: 10px;
+            border-radius: .25rem;
+        }
+
+        .messageText h4 {
+            display: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
         }
     </style>
 
-    <div class="container" style="margin-top:20px;margin-bottom:20px;">
-        <apex:form id="mainPage">
-            <div class="page-header">
-                <h2>Sierra-Cedar Salesforce Certifications</h2>
-            </div>
+    <div class="slds-scope container" style="margin-top:20px;margin-bottom:20px;">
+        <apex:outputPanel id="mainPage">
+            <apex:form id="mainForm" styleClass="slds-p-horizontal_x-small">
+                <apex:variable value="{!FLOOR((sciCertCount/25)*100)}" var="sciPercent"/>
+                <apex:variable value="{!FLOOR(25 - sciCertCount)}" var="certsToGo"/>
+                <apex:variable value="{!IF(sciPercent > 100, 100, sciPercent)}" var="sciPercentFixed"/>
+                <apex:variable value="{!IF(certsToGo < 0, 0, certsToGo)}" var="certsToGoFixed"/>
 
-            <apex:variable value="{!FLOOR((sciCertCount/25)*100)}" var="sciPercent"/>
-            <apex:variable value="{!FLOOR(25 - sciCertCount)}" var="certsToGo"/>
-            <apex:variable value="{!IF(sciPercent > 100, 100, sciPercent)}" var="sciPercentFixed"/>
-            <apex:variable value="{!IF(certsToGo < 0, 0, certsToGo)}" var="certsToGoFixed"/>
-            <h5>{!sciPercentFixed}% to Partner Status. {!certsToGoFixed} more to go.</h5>
-            <div class="progress">
-                <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{!sciPercent}" aria-valuemin="0" aria-valuemax="100" style="width:{!sciPercent}%">
-                    <span class="sr-only">{!sciPercent}% Complete</span>
-                </div>
-            </div>
+                <div class="slds-page-header slds-m-bottom_medium">
+                    <div class="slds-page-header__row">
+                        <div class="slds-page-header__col-title">
+                            <div class="slds-media">
+                                <div class="slds-media__body">
+                                    <div class="slds-page-header__name">
+                                        <div class="slds-page-header__name-title">
+                                            <h1>
+                                                <span class="slds-page-header__title slds-truncate" title="Sierra-Cedar Salesforce Certifications">
+                                                    Sierra-Cedar Salesforce Certifications
+                                                </span>
+                                            </h1>
+                                        </div>
+                                    </div>
+                                    <p class="slds-page-header__name-meta">
+                                        {!sciPercentFixed}% to Partner Status. {!certsToGoFixed} more to go.
+                                        <div>Based on data found <a href="https://partners.salesforce.com/s/education/consultants/Consulting_Program" target="_blank">here</a>.</div>
 
-            <button id="expandAll" class="btn btn-primary" onclick="return false;" style="margin-bottom:15px;">Toggle Collapse All</button>
-            <a class="btn btn-primary" href="#addNew" style="margin-bottom:15px;">Add New</a>
-
-            <apex:variable value="{!1}" var="num"/>
-            <apex:repeat value="{!ccws}" var="ccw">
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="headingOne">
-                        <h4 class="panel-title">
-                            <a role="button" data-toggle="collapse" href="#collapse{!num}" aria-expanded="true" aria-controls="collapse{!num}">
-                                {!ccw.c.Name}
-                            </a>
-                            <span class="pull-right" style="text-transform:capitalize;">
-                                Partner Certs: {!ccw.validCertCount}
-                            </span>
-                        </h4>
+                                        <div class="slds-p-top_medium">
+                                            Click on a person's name to go to the verification site. Sometimes this site breaks if
+                                                Salesforce updates their own site, so this will allow you to check for yourself.
+                                        </div>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-page-header__col-actions">
+                            <div class="slds-page-header__controls">
+                                <div class="slds-page-header__control">
+                                    <ul class="slds-button-group-list">
+                                        <li>
+                                            <span xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                <a class="slds-button slds-button_brand" href="#addNew" style="margin-bottom:15px;">
+                                                    <svg class="slds-button__icon slds-button__icon_left" aria-hidden="true">
+                                                        <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#new')}"></use>
+                                                    </svg>New
+                                                </a>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div id="collapse{!num}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-                        <div class="table-responsive" style="margin-bottom:0px;">
+
+                    <!--<div >-->
+                        <!--<div class="slds-progress-bar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{!sciPercent}" role="progressbar">-->
+                            <!--<span class="slds-progress-bar__value" style="width: {!sciPercent}%;">-->
+                                <!--<span class="slds-assistive-text">Progress: {!sciPercent}%</span>-->
+                            <!--</span>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                </div>
+
+                <apex:repeat value="{!ccws}" var="ccw">
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <a href="https://trailhead.salesforce.com/credentials/certification-detail-print?searchString={!ccw.c.Certification_Contact_Id__c}" target="_blank" style="color:white;">
+                                            {!ccw.c.Name}
+                                        </a>
+                                    </h2>
+                                </div>
+                                <div class="slds-no-flex">
+                                    Partner Certs: {!ccw.validCertCount}
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-table_striped slds-no-row-hover">
                             <table class="table table-striped" style="margin-bottom:0px;">
                                 <thead>
-                                    <tr>
-                                        <th>Certification Name</th>
-                                        <th>Certification Date</th>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="slds-text-title_caps" scope="col">Name</th>
+                                        <th class="slds-text-title_caps" scope="col">Date Earned</th>
                                     </tr>
                                 </thead>
 
                                 <apex:repeat value="{!ccw.certs}" var="sc">
-                                    <tr>
-                                        <td>{!sc.Certification_Name__c}</td>
-                                        <td>{!sc.Certification_Date__c}</td>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Name">{!sc.Certification_Name__c}</td>
+                                        <td data-label="Date Earned">{!sc.Certification_Date__c}</td>
                                     </tr>
                                 </apex:repeat>
                             </table>
                         </div>
+                    </article>
+                </apex:repeat>
+
+                <div class="slds-card">
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    Add yourself to the Certifications list
+                                </h2>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner">
+                        <div id="addNew" class="slds-form_stacked">
+                            <apex:pageMessages id="pageMessages"/>
+
+                            <div class="slds-form-element slds-p-top_x-small">
+                                <label class="slds-form-element__label" for="certContactId">Certification Contact Id</label>
+                                <apex:inputText styleClass="slds-input" id="certContactId" html-placeholder="Contact Id from the verification site" value="{!newContact.Certification_Contact_Id__c}"/>
+                            </div>
+
+                            <div class="slds-form-element">
+                                <apex:actionStatus id="saveStatus">
+                                    <apex:facet name="stop">
+                                        <apex:commandButton value="Submit" styleClass="slds-button slds-button_brand" action="{!createNewContact}" status="saveStatus" reRender="mainPage"/>
+                                    </apex:facet>
+                                    <apex:facet name="start">
+                                        <apex:commandButton value="Saving..." disabled="true" status="saveStatus" styleClass="slds-button slds-button_neutral"/>
+                                    </apex:facet>
+                                </apex:actionStatus>
+                            </div>
+
+                            <div class="slds-form-element slds-m-top_medium">
+                                Go to the new
+                                <a href="https://trailhead.salesforce.com/credentials/verification" target="_blank">
+                                    certification verification site
+                                </a>. Enter your name or email in the
+                                "Verify a Salesforce Certified Professional" search box to search for yourself. Once you
+                                are found, click "Show Credentials" to the right of your name and then "Print View". Once
+                                the new page opens, copy the Contact Id from the URL at the top of the page (after "searchString=").
+                                It starts with "003", paste that here.
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <apex:variable value="{!num + 1}" var="num"/>
-            </apex:repeat>
-
-            <div class="page-header" id="addNew">
-                <h3>Add to the Certifications List</h3>
-            </div>
-
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <apex:pageMessages id="pageMessages"/>
-
-                    <div class="form-group">
-                        <label for="contactEmail">Email</label>
-                        <apex:inputText styleClass="form-control"
-                                        id="contactEmail"
-                                        html-placeholder="Email address"
-                                        value="{!newContact.Email}"/>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="certContactId">Certification Contact Id</label>
-                        <apex:inputText styleClass="form-control"
-                                        id="certContactId"
-                                        html-placeholder="Contact Id from the verification site"
-                                        value="{!newContact.Certification_Contact_Id__c}"/>
-                        <span id="profileHelp" class="help-block">
-                            Go to the Certification Verification site and find the person you want to add. Click "View Certifications" and then "Print View".
-                            Copy the Salesforce Id from the URL and paste here.
-                        </span>
-                    </div>
-
-                    <apex:actionStatus id="saveStatus" >
-                        <apex:facet name="stop">
-                            <apex:commandButton value="Submit"
-                                                styleClass="btn btn-success"
-                                                action="{!createNewContact}"
-                                                status="saveStatus"
-                                                reRender="mainPage,pageMessages"/>
-                        </apex:facet>
-                        <apex:facet name="start">
-                            <apex:commandButton value="Saving..." disabled="true" status="saveStatus" styleClass="btn btn-default"/>
-                        </apex:facet>
-                    </apex:actionStatus>
-                </div>
-            </div>
-        </apex:form>
+            </apex:form>
+        </apex:outputPanel>
     </div>
-
-    <!-- JS Files -->
-    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"/>
-    <apex:includeScript value="{!URLFOR($Resource.bootstrap_337, 'bootstrap-3.3.7-dist/js/bootstrap.min.js')}"/>
-    <script>
-        $('#expandAll').on('click', function () {
-            $('.panel-collapse').collapse('toggle');
-        });
-    </script>
 </apex:page>

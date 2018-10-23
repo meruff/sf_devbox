@@ -1,16 +1,14 @@
 /*****************************************
 * File: CertificationsController
 * Author: meruff
-* Description: 
+* Description: Controller logic for certifications.page
 ******************************************/
 public class CertificationsController {
-    private static final String CALLOUT_URL = 'http://certification.salesforce.com/certification-detail-print?conId=';
-    private Map<String, Contact> contactMap;
     public Integer sciCertCount { get; set; }
     public Contact newContact { get; set; }
-    public List<PopulateCertifications.ContactCertWrapper> ccws { get; set; }
+    public List<ContactCertWrapper> ccws { get; set; }
 
-    public static Integer PARTNER_CERT_COUNT {
+    public final Decimal PARTNER_CERT_COUNT {
         get {
             if (PARTNER_CERT_COUNT == null) {
                 PARTNER_CERT_COUNT = 25;
@@ -18,10 +16,11 @@ public class CertificationsController {
 
             return PARTNER_CERT_COUNT;
         }
+
         set;
     }
 
-    public static Set<String> NON_VALID_CERTS {
+    public static final Set<String> NON_VALID_CERTS {
         get {
             if (NON_VALID_CERTS == null) {
                 NON_VALID_CERTS = new Set<String>{
@@ -37,6 +36,42 @@ public class CertificationsController {
         set;
     }
 
+    public static final Set<String> VALID_CERTS {
+        get {
+            if (VALID_CERTS == null) {
+                VALID_CERTS = new Set<String>{
+                    'Salesforce Certified Sales Cloud Consultant',
+                    'Salesforce Certified Service Cloud Consultant',
+                    'Salesforce Certified Platform Developer I',
+                    'Salesforce Certified Community Cloud Consultant',
+                    'Salesforce Certified Marketing Cloud Consultant',
+                    'Salesforce Certified Pardot Specialist',
+                    'Salesforce Certified Commerce Cloud Digital Developer',
+                    'Salesforce Certified Platform App Builder',
+                    'Salesforce Certified Advanced Administrator',
+                    'Salesforce Certified Platform Developer II',
+                    'Salesforce Certified Development Lifecycle & Deployment Designer',
+                    'Salesforce Certified Integration Architecture Designer',
+                    'Salesforce Certified Data Architecture & Management Designer',
+                    'Salesforce Certified Commerce Cloud Technical Solution Designer',
+                    'Salesforce Certified Sharing & Visibility Designer',
+                    'Salesforce Certified Mobile Solutions Architecture Designer',
+                    'Salesforce Certified Identity and Access Management Designer',
+                    'Salesforce Certified Marketing Cloud Social Specialist',
+                    'Salesforce Certified Field Services Lightning Consultant',
+                    'Salesforce Certified CPQ Specialist',
+                    'Salesforce Certified Technical Architect',
+                    'Salesforce Certified Application Architect',
+                    'Salesforce Certified System Architect'
+                };
+            }
+
+            return VALID_CERTS;
+        }
+
+        set;
+    }
+
     public CertificationsController() {
         populateContacts();
     }
@@ -44,33 +79,25 @@ public class CertificationsController {
     public void populateContacts() {
         sciCertCount = 0;
         newContact = new Contact();
-        contactMap = new Map<String, Contact>();
-        ccws = new List<PopulateCertifications.ContactCertWrapper>();
+        ccws = new List<ContactCertWrapper>();
 
         List<Contact> contacts = new List<Contact>([
-            SELECT Name, Certification_Contact_Id__c,
-            (
+            SELECT Name, Certification_Contact_Id__c, (
                 SELECT Id, Certification_Name__c, Certification_Date__c, Certification_Logo_URL__c
                 FROM Salesforce_Certifications__r
                 ORDER BY Certification_Name__c ASC
             )
             FROM Contact
-            WHERE Show_On_Certification_Site__c = true
+            WHERE Show_On_Certification_Site__c = TRUE
             ORDER BY Name ASC
         ]);
-
-        if (contacts.size() > 0) {
-            for (Contact con : contacts) {
-                contactMap.put(con.Certification_Contact_Id__c, con);
-            }
-        }
 
         for (Contact c : contacts) {
             Integer validCerts = 0;
             Integer invalidCerts = 0;
 
             for (Salesforce_Certification__c sc : c.Salesforce_Certifications__r) {
-                if (!NON_VALID_CERTS.contains(sc.Certification_Name__c)) {
+                if (VALID_CERTS.contains(sc.Certification_Name__c)) {
                     sciCertCount++;
                     validCerts++;
                 } else {
@@ -78,7 +105,7 @@ public class CertificationsController {
                 }
             }
 
-            PopulateCertifications.ContactCertWrapper ccw = new PopulateCertifications.ContactCertWrapper();
+            ContactCertWrapper ccw = new ContactCertWrapper();
             ccw.c = c;
             ccw.certs.addAll(c.Salesforce_Certifications__r);
             ccw.validCertCount = validCerts;
@@ -88,76 +115,65 @@ public class CertificationsController {
     }
 
     public void createNewContact() {
-        if (newContact.Certification_Contact_Id__c.length() > 18 || newContact.Certification_Contact_Id__c.length() < 18) {
-            ApexPages.addMessage(new ApexPages.Message(
-                ApexPages.Severity.Error,
-                'Certification Contact Ids must be 18 characters in length.'));
+        if (String.isBlank(newContact.Certification_Contact_Id__c)) {
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Certification Contact Id is required.'));
             return;
         }
 
-        if (String.isEmpty(newContact.Email) || String.isEmpty(newContact.Certification_Contact_Id__c)) {
-            ApexPages.addMessage(new ApexPages.Message(
-                ApexPages.Severity.Error,
-                'You must enter your Email and Certification Contact Id in order to be added to the board.'));
+        if (newContact.Certification_Contact_Id__c.length() > 18 || newContact.Certification_Contact_Id__c.length() < 18) {
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Certification Contact Ids must be 18 characters in length.'));
             return;
         }
 
         Http h = new Http();
         HttpRequest req = new HttpRequest();
-        req.setEndpoint(CALLOUT_URL + newContact.Certification_Contact_Id__c);
+        req.setEndpoint(PopulateCertifications.CALLOUT_URL + newContact.Certification_Contact_Id__c);
         req.setMethod('GET');
         HttpResponse res = h.send(req);
+        String body = res.getBody().replaceAll('Full_Name__c', 'fullName');
+        body = body.replaceAll('Certification_Status__r', 'CertStatus');
+        body = body.replaceAll('External_Certification_Type_Name__c', 'certName');
+        body = body.replaceAll('External_Original_Certification_Date__c', 'certDate');
 
-        if (!res.getBody().contains('No Active Certification Credentials Found')) {
-            List<Salesforce_Certification__c> certifications = new List<Salesforce_Certification__c>();
-            PopulateCertifications.ContactCertWrapper ccw = new PopulateCertifications.ContactCertWrapper();
-            ccw.c = newContact;
-            ccw = PopulateCertifications.populateCCW(res.getBody(), ccw);
+        PopulateCertifications.CertWrapper wrapper =
+            (PopulateCertifications.CertWrapper) JSON.deserialize(body, PopulateCertifications.CertWrapper.class);
 
-            for (Salesforce_Certification__c sc : ccw.certs) {
-                Boolean isDupe = false;
-                sc.Contact__c = ccw.c.Id;
+        if (!wrapper.data.isEmpty()) {
+            List<Salesforce_Certification__c> certificationsToUpsert = new List<Salesforce_Certification__c>();
+            newContact.FirstName = wrapper.data[0].fullName.split(' ')[0];
+            newContact.LastName = wrapper.data[0].fullName.split(' ')[1];
+            newContact.Show_On_Certification_Site__c = true;
+            upsert newContact Certification_Contact_Id__c;
 
-                if (contactMap.containsKey(ccw.c.Certification_Contact_Id__c)) {
-                    for (Salesforce_Certification__c check : contactMap.get(ccw.c.Certification_Contact_Id__c).Salesforce_Certifications__r) {
-                        if (check.Certification_Name__c == sc.Certification_Name__c) {
-                            isDupe = true;
-                            check.Certification_Name__c = sc.Certification_Name__c;
-                            check.Certification_Date__c = sc.Certification_Date__c;
-                            certifications.add(check);
-                        }
-                    }
+            if (wrapper.data[0].certStatus != null && !String.isBlank(newContact.Id)) {
+                for (PopulateCertifications.Cert cert : wrapper.data[0].certStatus.records) {
+                    certificationsToUpsert.add(new Salesforce_Certification__c(
+                        Contact__c = newContact.Id,
+                        Certification_Name__c = cert.certName,
+                        Certification_Date__c = cert.certDate,
+                        Upsert_Key__c = newContact.Id + cert.certName
+                    ));
                 }
-
-                if (!isDupe) certifications.add(sc);
             }
 
-            try {
-                upsert ccw.c Certification_Contact_Id__c;
-
-                if (certifications.size() > 0) {
-                    for (Salesforce_Certification__c sc : certifications) {
-                        sc.Contact__c = ccw.c.Id;
-                    }
-
-                    upsert certifications;
-                }
-
+            if (!certificationsToUpsert.isEmpty()) {
+                upsert certificationsToUpsert Upsert_Key__c;
                 populateContacts();
             }
-            catch (DmlException e) {
-                ApexPages.addMessage(new ApexPages.Message(
-                    ApexPages.Severity.Error,
-                    'ERROR during creation. Please try again later ' + e.getMessage()));
-                return;
-            }
-        } else {
-            ApexPages.addMessage(new ApexPages.Message(
-                ApexPages.Severity.Error,
-                'Either you have no active credentials, or could not find a User for this Id: ' +
-                newContact.Certification_Contact_Id__c + '. ' +
-                'Please ensure you have copied the correct Id from the Verification Site.'));
-            return;
+        }
+    }
+
+    public class ContactCertWrapper {
+        public Contact c { get; set; }
+        public List<Salesforce_Certification__c> certs { get; set; }
+        public Integer validCertCount { get; set; }
+        public Integer invalidCertCount { get; set; }
+
+        public ContactCertWrapper() {
+            c = new Contact();
+            certs = new List<Salesforce_Certification__c>();
+            validCertCount = 0;
+            invalidCertCount = 0;
         }
     }
 }
