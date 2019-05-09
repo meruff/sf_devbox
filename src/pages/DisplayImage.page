@@ -1,6 +1,6 @@
 <!--
 * File: DisplayImage.cmp
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar, Inc.
 * Description: 
 -->
 <apex:page id="DisplayImage" showHeader="false">

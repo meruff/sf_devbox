@@ -1,6 +1,6 @@
 <!--
 * File: DirectMessage.cmp
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar, Inc.
 * Description: Allows a user to direct message a specified auto-populated user.
 -->
 <aura:component description="DirectMessage" controller="DirectMessageController">

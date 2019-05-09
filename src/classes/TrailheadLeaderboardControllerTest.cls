@@ -1,11 +1,11 @@
 /*****************************************
 * File: TrailheadLeaderboardControllerTest
-* Author: detonation0
+* Author: meruff
 * Description: Unit tests for TrailheadLeaderboardControllerTest.cls
 ******************************************/
-@isTest
+@IsTest
 private class TrailheadLeaderboardControllerTest {
-    @testSetup
+    @TestSetup
     static void setUpData() {
         Trailblazer__c newBlazer = new Trailblazer__c(
             Name = 'Some ExistingBlazer',
@@ -18,10 +18,23 @@ private class TrailheadLeaderboardControllerTest {
         insert newBlazer;
     }
 
-    @isTest
+    @IsTest
     static void testAddTrailblazer() {
         // Arrange
-        Test.setMock(HttpCalloutMock.class, new TrailheadCalloutMock());
+        TrailheadCalloutMock mock = new TrailheadCalloutMock();
+        HttpResponse res1 = new HttpResponse();
+        res1.setHeader('Content-Type', 'application/json');
+        res1.setHeader('Location', 'forwardToUrl.com');
+        res1.setStatusCode(301);
+        mock.addResponse(res1);
+
+        HttpResponse res2 = new HttpResponse();
+        res2.setHeader('Content-Type', 'application/json');
+        res2.setStatusCode(200);
+        res2.setBody(TrailheadCalloutMock.getSuccessfulResponseBody());
+        mock.addResponse(res2);
+
+        Test.setMock(HttpCalloutMock.class, mock);
         Test.setCurrentPage(Page.trailheadLeaderboard);
 
         // Act

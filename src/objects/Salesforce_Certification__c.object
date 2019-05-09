@@ -46,9 +46,9 @@
     <description>An object to store Salesforce Certification information</description>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
-    <enableChangeDataCapture>false</enableChangeDataCapture>
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
     <enableReports>false</enableReports>
     <enableSearch>true</enableSearch>
     <enableSharing>true</enableSharing>
@@ -96,6 +96,18 @@
         <required>false</required>
         <trackTrending>false</trackTrending>
         <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Upsert_Key__c</fullName>
+        <caseSensitive>false</caseSensitive>
+        <description>Concatenation between ContactId + Certification Name</description>
+        <externalId>true</externalId>
+        <label>Upsert Key</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>true</unique>
     </fields>
     <label>Salesforce Certification</label>
     <listViews>

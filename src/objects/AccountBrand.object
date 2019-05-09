@@ -70,5 +70,18 @@
         <filterScope>Everything</filterScope>
         <label>All Account Brands</label>
     </listViews>
+    <searchLayouts>
+        <customTabListAdditionalFields>CompanyName</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Account</customTabListAdditionalFields>
+        <lookupDialogsAdditionalFields>CompanyName</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Account</lookupDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>CompanyName</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Account</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Phone</lookupPhoneDialogsAdditionalFields>
+        <searchResultsAdditionalFields>Account</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Website</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Email</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Phone</searchResultsAdditionalFields>
+    </searchLayouts>
     <sharingModel>Private</sharingModel>
 </CustomObject>

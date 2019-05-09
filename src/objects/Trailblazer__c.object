@@ -46,9 +46,9 @@
     <description>A custom object to hold Trailhead profiles for the trailhead leaderboard.</description>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
-    <enableChangeDataCapture>false</enableChangeDataCapture>
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
     <enableReports>false</enableReports>
     <enableSearch>true</enableSearch>
     <enableSharing>true</enableSharing>
@@ -180,6 +180,7 @@
         <columns>Trails__c</columns>
         <columns>Profile_Link__c</columns>
         <columns>Trailblazer_Since__c</columns>
+        <columns>Profile_Id__c</columns>
         <filterScope>Everything</filterScope>
         <label>All</label>
     </listViews>

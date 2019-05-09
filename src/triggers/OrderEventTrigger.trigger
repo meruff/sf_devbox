@@ -1,6 +1,6 @@
 /*****************************************
 * File: OrderEventTrigger
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar
 * Description: Order_Event__e Trigger
 ******************************************/
 trigger OrderEventTrigger on Order_Event__e (after insert) {

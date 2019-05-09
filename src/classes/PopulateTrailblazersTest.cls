@@ -1,11 +1,11 @@
 /*****************************************
 * File: PopulateTrailblazersTest
-* Author: detonation0
+* Author: meruff
 * Description: Unit Tests for PopulateTrailblazers.cls
 ******************************************/
-@isTest
+@IsTest
 private class PopulateTrailblazersTest {
-    @testSetup
+    @TestSetup
     static void setUpData() {
         Trailblazer__c newBlazer = new Trailblazer__c(
             Name = 'Tony Stark',
@@ -14,10 +14,23 @@ private class PopulateTrailblazersTest {
         insert newBlazer;
     }
 
-    @isTest
+    @IsTest
     static void testPopulateTrailblazers() {
         // Arrange
-        Test.setMock(HttpCalloutMock.class, new TrailheadCalloutMock());
+        TrailheadCalloutMock mock = new TrailheadCalloutMock();
+        HttpResponse res1 = new HttpResponse();
+        res1.setHeader('Content-Type', 'application/json');
+        res1.setHeader('Location', 'forwardToUrl.com');
+        res1.setStatusCode(301);
+        mock.addResponse(res1);
+
+        HttpResponse res2 = new HttpResponse();
+        res2.setHeader('Content-Type', 'application/json');
+        res2.setStatusCode(200);
+        res2.setBody(TrailheadCalloutMock.getSuccessfulResponseBody());
+        mock.addResponse(res2);
+
+        Test.setMock(HttpCalloutMock.class, mock);
 
         // Act 
         Test.startTest();
@@ -42,10 +55,23 @@ private class PopulateTrailblazersTest {
             'Trails__c should have been upserted to 0');
     }
 
-    @isTest
+    @IsTest
     static void testSchedulePopulation() {
         // Arrange
-        Test.setMock(HttpCalloutMock.class, new TrailheadCalloutMock());
+        TrailheadCalloutMock mock = new TrailheadCalloutMock();
+        HttpResponse res1 = new HttpResponse();
+        res1.setHeader('Content-Type', 'application/json');
+        res1.setHeader('Location', 'forwardToUrl.com');
+        res1.setStatusCode(301);
+        mock.addResponse(res1);
+
+        HttpResponse res2 = new HttpResponse();
+        res2.setHeader('Content-Type', 'application/json');
+        res2.setStatusCode(200);
+        res2.setBody(TrailheadCalloutMock.getSuccessfulResponseBody());
+        mock.addResponse(res2);
+
+        Test.setMock(HttpCalloutMock.class, mock);
 
         // Act
         Test.startTest();

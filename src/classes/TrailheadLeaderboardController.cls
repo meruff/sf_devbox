@@ -1,6 +1,6 @@
 /*****************************************
 * File: TrailheadLeaderboardController
-* Author: detonation0
+* Author: meruff
 * Description: Controller class for trailheadLeaderboard.page
 ******************************************/
 public class TrailheadLeaderboardController {
@@ -52,14 +52,14 @@ public class TrailheadLeaderboardController {
      * Id on the Visualforce page.
      */
     public PageReference upsertNewTrailblazer() {
-        if (!(String.escapeSingleQuotes(newProfileId) InstanceOf Id)) {
-            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.Error,
+        if (!(String.escapeSingleQuotes(newProfileId) instanceof Id)) {
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,
                 ' Please provide a valid Salesforce Id'));
             return null;
         }
 
         if (trailblazerIds.contains(newProfileId)) {
-            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.Error, ' This trailblazer already exists.'));
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, ' This trailblazer already exists.'));
             return null;
         }
 
@@ -70,7 +70,7 @@ public class TrailheadLeaderboardController {
             refresh.setRedirect(true);
             return refresh;
         } catch(Exception e) {
-            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.Error,
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,
                 ' Error during callout to Trailhead, please try again. ' + e.getMessage()));
             return null;
         }
@@ -89,6 +89,32 @@ public class TrailheadLeaderboardController {
         req.setMethod('GET');
         HttpResponse res = h.send(req);
 
+        // Handling for redirects (custom Trailhead Profiles /me/)
+        Boolean redirect = false;
+
+        if (res.getStatusCode() >= 300 && res.getStatusCode() <= 307 && res.getStatusCode() != 306) {
+            do {
+                redirect = false; // reset the value each time
+                String loc = res.getHeader('Location'); // get location of the redirect
+
+                if (loc == null) {
+                    redirect = false;
+                    continue;
+                }
+
+                req = new HttpRequest();
+                req.setEndpoint(loc);
+                req.setMethod('GET');
+                res = h.send(req);
+
+                if (res.getStatusCode() != 500) { // 500 = fail
+                    if (res.getStatusCode() >= 300 && res.getStatusCode() <= 307 && res.getStatusCode() != 306) {
+                        redirect = true;
+                    }
+                }
+            } while (redirect && Limits.getCallouts() != Limits.getLimitCallouts());
+        }
+
         if (res.getStatus() != 'Not Found'
             && (!res.getBody().contains('Someone\'s hiding!')
             && !res.getBody().contains('This user has chosen to keep their profile private.'))
@@ -101,7 +127,7 @@ public class TrailheadLeaderboardController {
                 upsert badgesToUpsert Upsert_Key__c;
             }
         } else {
-            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.Error,
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,
                 'Could not find a Trailhead profile for User Id: ' + profileId +
                 '. Please ensure your profile is set to public and you\'ve copied your Id correctly.'
             ));

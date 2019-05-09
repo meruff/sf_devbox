@@ -1,6 +1,6 @@
 /*****************************************
  * File: campingListFormHelper.js
- * Author: meruff
+ * Author: Mathew Ruff, Sierra-Cedar
  * Description: Helper logic for
  ******************************************/
 ({

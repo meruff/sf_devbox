@@ -1,6 +1,6 @@
 <!--
 * File: campingList.cmp
-* Author: meruff
+* Author: Mathew Ruff, Sierra-Cedar, Inc.
 * Description:  
 -->
 <aura:component description="campingList" controller="CampingListController">
