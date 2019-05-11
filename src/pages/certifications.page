@@ -40,63 +40,35 @@
     <div class="slds-scope container" style="margin-top:20px;margin-bottom:20px;">
         <apex:outputPanel id="mainPage">
             <apex:form id="mainForm" styleClass="slds-p-horizontal_x-small">
-                <apex:variable value="{!FLOOR((sciCertCount/25)*100)}" var="sciPercent"/>
-                <apex:variable value="{!FLOOR(25 - sciCertCount)}" var="certsToGo"/>
-                <apex:variable value="{!IF(sciPercent > 100, 100, sciPercent)}" var="sciPercentFixed"/>
-                <apex:variable value="{!IF(certsToGo < 0, 0, certsToGo)}" var="certsToGoFixed"/>
-
                 <div class="slds-page-header slds-m-bottom_medium">
                     <div class="slds-page-header__row">
                         <div class="slds-page-header__col-title">
                             <div class="slds-media">
+                                <div class="slds-media__figure">
+                                    <img src="https://www.sierra-cedar.com/wp-content/uploads/sites/12/2014/06/sierra-cedar_icon1.png" alt="sci-icon" width="35px;"/>
+                                </div>
                                 <div class="slds-media__body">
                                     <div class="slds-page-header__name">
                                         <div class="slds-page-header__name-title">
                                             <h1>
-                                                <span class="slds-page-header__title slds-truncate" title="Sierra-Cedar Salesforce Certifications">
+                                                <span class="slds-page-header__title slds-wrap" title="Sierra-Cedar Salesforce Certifications" style="font-size: 1.2rem;">
                                                     Sierra-Cedar Salesforce Certifications
                                                 </span>
                                             </h1>
                                         </div>
                                     </div>
                                     <p class="slds-page-header__name-meta">
-                                        {!sciPercentFixed}% to Partner Status. {!certsToGoFixed} more to go.
-                                        <div>Based on data found <a href="https://partners.salesforce.com/s/education/consultants/Consulting_Program" target="_blank">here</a>.</div>
-
-                                        <div class="slds-p-top_medium">
-                                            Click on a person's name to go to the verification site. Sometimes this site breaks if
-                                                Salesforce updates their own site, so this will allow you to check for yourself.
-                                        </div>
+                                        {!allCertCount} total Certifications
                                     </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="slds-page-header__col-actions">
-                            <div class="slds-page-header__controls">
-                                <div class="slds-page-header__control">
-                                    <ul class="slds-button-group-list">
-                                        <li>
-                                            <span xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                                <a class="slds-button slds-button_brand" href="#addNew" style="margin-bottom:15px;">
-                                                    <svg class="slds-button__icon slds-button__icon_left" aria-hidden="true">
-                                                        <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#new')}"></use>
-                                                    </svg>New
-                                                </a>
-                                            </span>
-                                        </li>
-                                    </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!--<div >-->
-                        <!--<div class="slds-progress-bar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{!sciPercent}" role="progressbar">-->
-                            <!--<span class="slds-progress-bar__value" style="width: {!sciPercent}%;">-->
-                                <!--<span class="slds-assistive-text">Progress: {!sciPercent}%</span>-->
-                            <!--</span>-->
-                        <!--</div>-->
-                    <!--</div>-->
+                    <div class="slds-p-top_medium">
+                        Click on a person's name to go to the verification site. Sometimes this site breaks if
+                        Salesforce updates their own site, so this will allow you to check Salesforce directly.
+                    </div>
                 </div>
 
                 <apex:repeat value="{!ccws}" var="ccw">
@@ -104,14 +76,14 @@
                         <div class="slds-card__header slds-grid">
                             <header class="slds-media slds-media_center slds-has-flexi-truncate">
                                 <div class="slds-media__body">
-                                    <h2 class="slds-card__header-title">
-                                        <a href="https://trailhead.salesforce.com/credentials/certification-detail-print?searchString={!ccw.c.Certification_Contact_Id__c}" target="_blank" style="color:white;">
+                                    <h2 class="slds-text-title_caps">
+                                        <a href="https://trailhead.salesforce.com/credentials/certification-detail-print?searchString={!ccw.c.Certification_Site_Key__c}" target="_blank" style="color:white;">
                                             {!ccw.c.Name}
                                         </a>
                                     </h2>
                                 </div>
                                 <div class="slds-no-flex">
-                                    Partner Certs: {!ccw.validCertCount}
+                                    Certifications: {!ccw.certs.size}
                                 </div>
                             </header>
                         </div>
@@ -149,9 +121,8 @@
                         <div id="addNew" class="slds-form_stacked">
                             <apex:pageMessages id="pageMessages"/>
 
-                            <div class="slds-form-element slds-p-top_x-small">
-                                <label class="slds-form-element__label" for="certContactId">Certification Contact Id</label>
-                                <apex:inputText styleClass="slds-input" id="certContactId" html-placeholder="Contact Id from the verification site" value="{!newContact.Certification_Contact_Id__c}"/>
+                            <div class="slds-form-element slds-m-vertical_x-small">
+                                <apex:inputText styleClass="slds-input" id="certContactId" html-placeholder="Certification key" value="{!newContact.Certification_Site_Key__c}"/>
                             </div>
 
                             <div class="slds-form-element">
@@ -166,14 +137,19 @@
                             </div>
 
                             <div class="slds-form-element slds-m-top_medium">
-                                Go to the new
-                                <a href="https://trailhead.salesforce.com/credentials/verification" target="_blank">
-                                    certification verification site
-                                </a>. Enter your name or email in the
-                                "Verify a Salesforce Certified Professional" search box to search for yourself. Once you
-                                are found, click "Show Credentials" to the right of your name and then "Print View". Once
-                                the new page opens, copy the Contact Id from the URL at the top of the page (after "searchString=").
-                                It starts with "003", paste that here.
+                                <p>
+                                    Go to the certification
+                                    <a href="https://trailhead.salesforce.com/credentials/verification" target="_blank">
+                                        verification
+                                    </a> site. Enter your name or email in the
+                                    "Verify a Salesforce Certified Professional" search box to search for yourself. Once you
+                                    are found, click "Show Credentials" to the right of your name and then "Print View". Once
+                                    the new page opens, copy the key value from the URL at the top of the page
+                                    (after "searchString=") and paste that here.
+                                </p>
+                                <p class="slds-m-vertical_x-small slds-truncate">
+                                    An example key looks like: E7UcdS8v1rsUl+nSCZQrlTc%2FCGjCekESWLGjBMI9v%2Fc+8hixZ5pnIFgbE58z%2FQc
+                                </p>
                             </div>
                         </div>
                     </div>
