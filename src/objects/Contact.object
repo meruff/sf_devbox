@@ -95,6 +95,7 @@
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <enableFeeds>true</enableFeeds>
     <enableHistory>false</enableHistory>
+    <externalSharingModel>ControlledByParent</externalSharingModel>
     <fields>
         <fullName>AccountId</fullName>
         <trackFeedHistory>true</trackFeedHistory>
@@ -119,6 +120,17 @@
         <externalId>true</externalId>
         <label>Certification Contact Id</label>
         <length>18</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>Certification_Site_Key__c</fullName>
+        <caseSensitive>false</caseSensitive>
+        <externalId>true</externalId>
+        <label>Certification Site Key</label>
+        <length>255</length>
         <required>false</required>
         <trackFeedHistory>false</trackFeedHistory>
         <type>Text</type>
@@ -169,6 +181,11 @@
     <fields>
         <fullName>HomePhone</fullName>
         <trackFeedHistory>false</trackFeedHistory>
+    </fields>
+    <fields>
+        <fullName>IndividualId</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Lookup</type>
     </fields>
     <fields>
         <fullName>Jigsaw</fullName>
@@ -313,11 +330,9 @@
     <listViews>
         <fullName>SCI_Contacts</fullName>
         <columns>FULL_NAME</columns>
-        <columns>ACCOUNT.NAME</columns>
-        <columns>CONTACT.PHONE1</columns>
         <columns>CONTACT.EMAIL</columns>
-        <columns>CONTACT.TITLE</columns>
-        <columns>CORE.USERS.ALIAS</columns>
+        <columns>Certification_Contact_Id__c</columns>
+        <columns>Certification_Site_Key__c</columns>
         <filterScope>Everything</filterScope>
         <filters>
             <field>Show_On_Certification_Site__c</field>
