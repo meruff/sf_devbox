@@ -57,7 +57,7 @@ global class PopulateCertifications implements Schedulable {
             List<Salesforce_Certification__c> certificationsToUpsert = new List<Salesforce_Certification__c>();
 
             for (CertWrapper wrapper : wrappers) {
-                if (contactMap.containsKey(wrapper.data[0].jsonResponse.certUser[0].Name)) {
+                if (wrapper.data[0].jsonResponse.certUser[0] != null && contactMap.containsKey(wrapper.data[0].jsonResponse.certUser[0].Name)) {
                     contactsToUpsert.add(new Contact(
                         Certification_Site_Key__c = contactMap.get(wrapper.data[0].jsonResponse.certUser[0].Name).Certification_Site_Key__c,
                         FirstName = wrapper.data[0].jsonResponse.certUser[0].Name.split(' ')[0],
@@ -65,7 +65,7 @@ global class PopulateCertifications implements Schedulable {
                         Show_On_Certification_Site__c = true
                     ));
 
-                    if (wrapper.data[0].jsonResponse.certUser[0].RelatedCertificationStatus.records != null) {
+                    if (wrapper.data[0].jsonResponse.certUser[0].RelatedCertificationStatus != null && wrapper.data[0].jsonResponse.certUser[0].RelatedCertificationStatus.records != null) {
                         for (Records cert : wrapper.data[0].jsonResponse.certUser[0].RelatedCertificationStatus.records) {
                             certificationsToUpsert.add(new Salesforce_Certification__c(
                                 Contact__c = contactMap.get(wrapper.data[0].jsonResponse.certUser[0].Name).Id,
