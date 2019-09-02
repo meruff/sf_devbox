@@ -1,0 +1,15 @@
+.container {
+    max-width: 1300px;
+    margin: auto;
+}
+
+.adjust-icon {
+    vertical-align: top;
+    margin-top: 1px;
+}
+
+.brand-link,
+.brand-link:hover,
+.brand-link:focus {
+    color: #394355 !important;
+}

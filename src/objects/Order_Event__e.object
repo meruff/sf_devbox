@@ -27,4 +27,5 @@
     </fields>
     <label>Order Event</label>
     <pluralLabel>Order Events</pluralLabel>
+    <publishBehavior>PublishImmediately</publishBehavior>
 </CustomObject>

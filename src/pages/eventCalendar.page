@@ -1,0 +1,13 @@
+<apex:page sidebar="false" showHeader="false" docType="HTML-5.0" standardStylesheets="false">
+    <apex:includeLightning />
+
+    <div id="eventCalendar"></div>
+
+    <script>
+        window.onload = function() {
+            $Lightning.use("c:CalendarContainer", function () {
+                $Lightning.createComponent("c:eventCalendar", null, "eventCalendar", function (cmp) {});
+            });
+        };
+    </script>
+</apex:page>

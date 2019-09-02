@@ -1,0 +1,103 @@
+<template>
+    <!-- Desktop View -->
+    <div class="slds-show--medium container">
+        <lightning-card title="">
+            <h2 slot="title">
+                <span class="slds-text-heading_small">
+                    All Trailblazers
+                    <br/><span class="slds-text-title">Click on a user to view their badges</span>
+                </span>
+            </h2>
+
+            <div slot="actions">
+                <a class="brand-link" onclick={showTrailblazerModal}>
+                    <lightning-icon icon-name="utility:new" size="xx-small" alternative-text="Plus Icon" class="adjust-icon"></lightning-icon>
+                    &nbsp;Add New
+                </a>
+            </div>
+
+            <div class="slds-scrollable_x">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Number">#</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Name">Name</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Rank">Rank</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Points">Points</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Badges">Badges</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Trails">Trails</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Trails">Superbadges</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Trailblazer Since">Trailblazer Since</div>
+                            </th>
+                            <th scope="col" class="slds-cell-wrap">
+                                <div class="slds-truncate" title="Profile">Profile</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template iterator:it={trailblazers}>
+                            <c-leaderboard-profile-table-row key={it.value.Id} trailblazer={it.value} first={it.first} index={it.index} onopenmodal={showBadgesModal}></c-leaderboard-profile-table-row>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+
+            <div slot="footer">
+                <div class="slds-text-title_caps slds-align_absolute-center" style="margin-top:-.75rem;">
+                    Built&nbsp;by&nbsp;<a href="https://github.com/meruff" target="_blank" class="brand-link">meruff</a>
+                </div>
+            </div>
+        </lightning-card>
+    </div>
+
+    <!-- Mobile View -->
+    <div class="slds-hide--medium">
+        <div class="slds-p-bottom_x-large">
+            <lightning-card title="">
+                <h2 slot="title">
+                    <span class="slds-text-heading_small">
+                        All Trailblazers
+                        <div class="slds-text-title">Click on a user to view their badges</div>
+                    </span>
+                </h2>
+
+                <div slot="actions">
+                    <a class="brand-link" onclick={showTrailblazerModal}>
+                        <lightning-icon icon-name="utility:new" size="xx-small" alternative-text="Plus Icon" class="adjust-icon"></lightning-icon>
+                        &nbsp;Add New
+                    </a>
+                </div>
+            </lightning-card>
+        </div>
+
+        <template iterator:it={trailblazers}>
+            <c-leaderboard-profile-card key={it.value.Id} trailblazer={it.value} first={it.first} index={it.index} onopenmodal={showBadgesModal}></c-leaderboard-profile-card>
+        </template>
+
+        <div style="margin-top:-1rem;">
+            <lightning-card title="">
+                <div class="slds-text-title_caps slds-align_absolute-center" style="margin-top:-.75rem;">
+                    Built&nbsp;by&nbsp;<a href="https://github.com/meruff" target="_blank" class="brand-link">meruff</a>
+                </div>
+            </lightning-card>
+        </div>
+    </div>
+
+    <c-leaderboard-new-trailblazer-modal is-modal-open={isTrailblazerModalOpen} onclosemodal={hideTrailblazerModal} onrefreshtable={fireRefresh}></c-leaderboard-new-trailblazer-modal>
+    <c-leaderboard-badges-modal is-modal-open={isBadgesModalOpen} trailblazers={trailblazers} selected-trailblazer-id={selectedTrailblazerId} onclosemodal={hideBadgesModal}></c-leaderboard-badges-modal>
+</template>
