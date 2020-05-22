@@ -1,74 +1,132 @@
 /**
-* @author Mathew Ruff, Sierra-Cedar
+* @author meruff
 * @date 2019-06-17
 *
 * Apex controller logic for LWC leaderboard.
 */
 public class TrailheadLeaderboardAuraController {
+    /**
+     * Queries for Trailblazer__c records to display on the page.
+     *
+     * @param fieldToSortBy, the API Name of the field used to sort, defaults to Points__c.
+     * @param descending, whether or not to sort by DESC.
+     *
+     * @return a List of Trailblazer__c records.
+     */
     @AuraEnabled(Cacheable=true)
-    public static List<Trailblazer__c> populateTrailblazers() {
-        return [
-            SELECT Id, Name, Badges__c, Points__c, Trailblazer_Since__c, Trails__c, Profile_Id__c,
-                Profile_Link__c, Rank__c, Profile_Photo__c, Job_Role__c, Job_Title__c, Company_Institution__c, (
-                SELECT Title__c, Icon_Link__c, Type__c, Points__c, Date_Earned__c, Path__c
-                FROM Badges__r
-                ORDER BY Title__c ASC
-            )
-            FROM Trailblazer__c
-            ORDER BY Points__c DESC
-        ];
-    }
+    public static List<Trailblazer__c> populateTrailblazers(String fieldToSortBy, Boolean descending) {
+        String queryString = '' +
+            'SELECT Id, Name, Badges__c, Points__c, Trailblazer_Since__c, Trails__c, Profile_Handle__c, Profile_Id__c, ' +
+                'Profile_Link__c, Rank__c, Profile_Photo__c, Job_Role__c, Job_Title__c, Company_Institution__c, ' +
+                'Rank_Badge_Link__c, Superbadges__c, Certifications__c ' +
+            'FROM Trailblazer__c';
 
-    @AuraEnabled
-    public static String createTrailblazer(String userId) {
-        Http h = new Http();
-        HttpRequest req = new HttpRequest();
-        req.setEndpoint(PopulateTrailblazers.TRAILHEAD_URL + '/me/' + userId.replace(' ', '').trim());
-        req.setMethod('GET');
-        HttpResponse res = h.send(req);
+        if (String.isBlank(fieldToSortBy)) {
+            queryString += ' ORDER BY Points__c DESC';
+        } else {
+            queryString += ' ORDER BY ' + fieldToSortBy;
 
-        // Handling for redirects (custom Trailhead Profiles /me/)
-        Boolean redirect = false;
-
-        if (res.getStatusCode() >= 300 && res.getStatusCode() <= 307 && res.getStatusCode() != 306) {
-            do {
-                redirect = false;
-                String loc = res.getHeader('Location');
-
-                if (loc == null) {
-                    redirect = false;
-                    continue;
-                }
-
-                req = new HttpRequest();
-                req.setEndpoint(loc);
-                req.setMethod('GET');
-                res = h.send(req);
-
-                if (res.getStatusCode() != 500) {
-                    if (res.getStatusCode() >= 300 && res.getStatusCode() <= 307 && res.getStatusCode() != 306) {
-                        redirect = true;
-                    }
-                }
-            } while (redirect && Limits.getCallouts() != Limits.getLimitCallouts());
+            if (descending == null || descending) {
+                queryString += ' DESC';
+            } else {
+                queryString += ' ASC';
+            }
         }
 
-        if (res.getStatus() != 'Not Found'
-            && (!res.getBody().contains('Someone\'s hiding!')
-            && !res.getBody().contains('This user has chosen to keep their profile private.'))
-        ) {
-            Trailblazer__c tbToUpsert = PopulateTrailblazers.populateTrailblazer(res.getBody());
-            upsert tbToUpsert Profile_Id__c;
+        return Database.query(queryString);
+    }
 
-            List<Badge__c> badgesToUpsert = PopulateTrailblazers.getTrailblazerBadges(res.getBody(), tbToUpsert);
-            if (badgesToUpsert.size() > 0) {
-                upsert badgesToUpsert Upsert_Key__c;
-            }
+    /**
+     * Creates and upserts a new Trailblazer__c record by calling out to the Trailhead API and parsing the response data.
+     *
+     * @param userId, the user handle to use when calling out to Trailhead.
+     *
+     * @return, a message String whether or not the callout succeeded.
+     */
+    @AuraEnabled
+    public static String createTrailblazer(String userId) {
+        Trailblazer__c newTrailblazer = new Trailblazer__c(Profile_Handle__c = userId.replace(' ', '').trim());
+        PopulateTrailblazers.populateTrailblazerProfileData(newTrailblazer, PopulateTrailblazers.getProfileData(newTrailblazer));
+        PopulateTrailblazers.populateTrailblazerProfileCountsData(newTrailblazer, PopulateTrailblazers.getProfileCountData(newTrailblazer));
+        PopulateTrailblazers.populateTrailblazerSuperbadgeData(newTrailblazer, PopulateTrailblazers.getSuperbadgeData(newTrailblazer));
+        PopulateTrailblazers.populateTrailblazerCertificationData(newTrailblazer, PopulateTrailblazers.getCertificationData(newTrailblazer));
 
+        try {
+            upsert newTrailblazer Profile_Handle__c;
             return 'success';
-        } else {
+        } catch(Exception e) {
             return 'Could not find a Trailhead profile for User Id/handle: ' + userId +
                 '. Please ensure your profile is set to public and you\'ve copied your Id correctly.';
+        }
+    }
+
+    /**
+     * Returns a List of CertificationData.cerificationsList records after parsing the response data from the Trailhead API.
+     *
+     * @param userId, the user handle to use when calling out to Trailhead.
+     *
+     * @return, a List of CertificationData.certificationsList records.
+     */
+    @AuraEnabled
+    public static List<CertificationData.certificationsList> getCertificationData(String userId) {
+        Http h = new Http();
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(PopulateTrailblazers.GO_TRAILHEAD_API + userId + 'certifications');
+        req.setMethod('GET');
+        req.setTimeout(60000);
+        HttpResponse res = h.send(req);
+
+        if (res.getBody().contains('application-error')) {
+            return null;
+        }
+
+        CertificationData data = (CertificationData) JSON.deserialize(res.getBody().replaceAll('__c', ''), CertificationData.class);
+
+        if (data != null && data.certificationsList != null && !data.certificationsList.isEmpty()) {
+            return data.certificationsList;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns a List of BadgeData.EarnedAwards records after parsing the response data from the Trailhead API.
+     *
+     * @param userId, the user handle to use when calling out to Trailhead.
+     *
+     * @return, a List of BadgeData.EarnedAwards records.
+     */
+    @AuraEnabled
+    public static List<BadgeData.EarnedAwards> getBadgeData(String userId, String filter, String offset) {
+        String calloutURL = '';
+
+        if (!String.isBlank(filter)) {
+            calloutURL = PopulateTrailblazers.GO_TRAILHEAD_API + userId + '/badges/' + filter;
+
+            if (!String.isBlank(offset)) {
+                calloutURL += '/' + offset;
+            }
+        } else {
+            calloutURL = PopulateTrailblazers.GO_TRAILHEAD_API + userId + 'badges';
+        }
+
+        Http h = new Http();
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(calloutURL);
+        req.setMethod('GET');
+        req.setTimeout(60000);
+        HttpResponse res = h.send(req);
+
+        if (res.getBody().contains('application-error')) {
+            return null;
+        }
+
+        BadgeData data = (BadgeData) JSON.deserialize(res.getBody().replaceAll('__c', ''), BadgeData.class);
+
+        if (data.value != null && !data.value.isEmpty() && data.value[0].EarnedAwards != null && !data.value[0].EarnedAwards.isEmpty()) {
+            return data.value[0].EarnedAwards;
+        } else {
+            return null;
         }
     }
 }
