@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SCI_Contacts</fullName>
+    <columns>FULL_NAME</columns>
+    <columns>CONTACT.EMAIL</columns>
+    <columns>Certification_Contact_Id__c</columns>
+    <columns>Certification_Site_Key__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Show_On_Certification_Site__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <label>SCI Contacts</label>
+</ListView>
